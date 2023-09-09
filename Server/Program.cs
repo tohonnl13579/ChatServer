@@ -18,7 +18,9 @@ namespace Server
             host = new ServiceHost(typeof(DataServer));
             host.AddServiceEndpoint(typeof(DataServerInterface), tcp, "net.tcp://0.0.0.0:8100/DataService");
             host.Open();
-            Console.WriteLine("Server is now online!");
+            Console.WriteLine(" ChatServer is now online! ");
+            Console.ReadLine();
+            Console.WriteLine(" Press enter again to close the ChatServer... ");
             Console.ReadLine();
             host.Close();
         }
