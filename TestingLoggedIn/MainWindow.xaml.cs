@@ -33,17 +33,22 @@ namespace TestingLoggedIn
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();
             InitializeComponent();
-            UpdateRoomList();
+            UpdateRooms();
         }
 
         private void RoomList_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListBoxItem item = (ListBoxItem) RoomList_ListBox.SelectedItem;
+            if (chatRoom != null)
+            {
+                foob.LeaveChatRoom(chatRoom, username);
+            }
             if (item != null)
             {
-                chatRoom = item.Content.ToString();
+                chatRoom = foob.JoinChatRoom(item.Content.ToString(), username);
             }
             UpdateMessages();
+            UpdateUsers();
         }
 
         private void Send_Button_Click(object sender, RoutedEventArgs e)
@@ -72,7 +77,7 @@ namespace TestingLoggedIn
             }
         }
 
-        private void UpdateRoomList()
+        private void UpdateRooms()
         {
             List<string> roomList = foob.GetChatRoomList();
             RoomList_ListBox.Items.Clear();
@@ -81,6 +86,18 @@ namespace TestingLoggedIn
                 ListBoxItem item = new ListBoxItem();
                 item.Content = roomList[i];
                 RoomList_ListBox.Items.Add(item);
+            }
+        }
+
+        private void UpdateUsers()
+        {
+            UserOnline_ListBox.Items.Clear();
+            HashSet<string> userOnline = foob.GetUserOnline(chatRoom);
+            foreach (string user in userOnline)
+            {
+                ListBoxItem item = new ListBoxItem();
+                item.Content = user;
+                UserOnline_ListBox.Items.Add(item);
             }
         }
 
@@ -98,16 +115,21 @@ namespace TestingLoggedIn
         private void CreateRoom_Buton_Click(object sender, RoutedEventArgs e)
         {
             string intendName = CreateRoom_TextBox.Text;
+            if (chatRoom != null)
+            {
+                foob.LeaveChatRoom(chatRoom, username);
+            }
             if (intendName != "")
             {
                 string newRoomName = foob.CreateChatRoom(intendName, username);
                 if (newRoomName != null)
                 {
                     chatRoom = newRoomName;
-                    UpdateRoomList();
-                    UpdateMessages();
                 }
             }
+            UpdateRooms();
+            UpdateMessages();
+            UpdateUsers();
         }
     }
 }

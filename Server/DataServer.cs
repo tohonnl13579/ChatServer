@@ -39,17 +39,6 @@ namespace Server
             return added;
         }
 
-        public List<string> GetChatRoomList()
-        {
-            List<string> roomNameList = new List<string>();
-            for (int i = 0; i < db.GetTotalRoom(); i++)
-            {
-                db.GetRoomNameByIndex(i, out string roomName);
-                roomNameList.Add(roomName);
-            }
-            return roomNameList;
-        }
-
         public string CreateChatRoom(string roomName, string username)
         {
             string created;
@@ -59,8 +48,8 @@ namespace Server
             }
             else
             {
-                db.AddUserChatRoom(roomName, username);
                 db.AddChatRoom(roomName);
+                db.AddUserChatRoom(roomName, username);
                 created = roomName;
             }
             return created;
@@ -75,6 +64,14 @@ namespace Server
                 nowRoomName = roomName;
             }
             return nowRoomName;
+        }
+
+        public void LeaveChatRoom(string roomName, string username)
+        {
+            if (CheckRoomExisted(roomName))
+            {
+                db.RemoveUserChatRoom(roomName, username);
+            }
         }
 
         public void SendPublicMessage(string roomName, string username, string message)
@@ -132,7 +129,22 @@ namespace Server
             return messagesString;
         }
 
+        public List<string> GetChatRoomList()
+        {
+            List<string> roomNameList = new List<string>();
+            for (int i = 0; i < db.GetTotalRoom(); i++)
+            {
+                db.GetRoomNameByIndex(i, out string roomName);
+                roomNameList.Add(roomName);
+            }
+            return roomNameList;
+        }
 
+        public HashSet<string> GetUserOnline(string roomName)
+        {
+            HashSet<string> userOnline = db.GetUserListInRoom(roomName);
+            return userOnline;
+        }
 
         private bool CheckUserExisted(string username)
         {
@@ -166,16 +178,8 @@ namespace Server
 
         private bool CheckUserExistedInRoom(string roomName, string username)
         {
-            bool existed = false;
-            db.GetUserListInRoom(roomName, out List<string> userList);
-            for (int i=0; i < userList.Count; i++)
-            {
-                if (userList[i].Equals(username)) 
-                { 
-                    existed = true; 
-                    break; 
-                }
-            }
+            HashSet<string> userOnline = db.GetUserListInRoom(roomName);
+            bool existed = userOnline.Contains(username);
             return existed;
         }
     }

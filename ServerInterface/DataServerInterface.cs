@@ -30,6 +30,9 @@ namespace ServerInterface
         string JoinChatRoom(string roomName, string username);
 
         [OperationContract]
+        void LeaveChatRoom(string roomName, string username);
+
+        [OperationContract]
         void SendPublicMessage(string roomName, string username, string message);
 
         [OperationContract]
@@ -40,5 +43,8 @@ namespace ServerInterface
 
         [OperationContract]
         List<string> GetChatRoomList();
+
+        [OperationContract]
+        HashSet<string> GetUserOnline(string roomName);
     }
 }

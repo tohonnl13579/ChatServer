@@ -48,13 +48,28 @@ namespace ChatServer
             chatrooms.Add(chatRoom);
         }
 
-        public void AddUserChatRoom(string roomName, string username)
+        public bool AddUserChatRoom(string roomName, string username)
         {
+            bool result = false;
             for (int i=0; i<chatrooms.Count; i++)
             {
                 if (chatrooms[i].roomName.Equals(roomName))
                 {
-                    chatrooms[i].roomUsers.Add(username);
+                    result = chatrooms[i].roomUsers.Add(username);
+                    break;
+                }
+            }
+            return result;
+        }
+
+        public void RemoveUserChatRoom(string roomName, string username)
+        {
+            for (int i = 0; i < chatrooms.Count; i++)
+            {
+                if (chatrooms[i].roomName.Equals(roomName))
+                {
+                    chatrooms[i].roomUsers.Remove(username);
+                    break;
                 }
             }
         }
@@ -70,20 +85,23 @@ namespace ChatServer
                     messageItem.toUser = toUser;
                     messageItem.message = message;
                     chatrooms[i].messages.Add(messageItem);
+                    break;
                 }
             }
         }
 
-        public void GetUserListInRoom(string roomName, out List<string> userList)
+        public HashSet<string> GetUserListInRoom(string roomName)
         {
-            userList = new List<string>();
+            HashSet<string> userList = new HashSet<string>();
             for (int i = 0; i < chatrooms.Count; i++)
             {
                 if (chatrooms[i].roomName.Equals(roomName))
                 {
                     userList = chatrooms[i].roomUsers;
+                    break;
                 }
             }
+            return userList;
         }
 
         public void GetUsernameByIndex(int index, out string username) 

@@ -8,7 +8,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <ListBox x:Name="RoomList_ListBox" HorizontalAlignment="Left" Height="389" VerticalAlignment="Top" Width="189" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="RoomList_ListBox_SelectionChanged"/>
-        <ListBox x:Name="Message_ListBox" HorizontalAlignment="Left" Height="359" Margin="189,30,0,0" VerticalAlignment="Top" Width="611" d:ItemsSource="{d:SampleData ItemCount=5}"/>
+        <ListBox x:Name="Message_ListBox" HorizontalAlignment="Left" Height="359" Margin="189,30,0,0" VerticalAlignment="Top" Width="513"/>
         <Label x:Name="ChatRoom_Label" Content="Please join a room first" HorizontalAlignment="Left" Margin="189,-1,0,0" VerticalAlignment="Top" Height="31" Width="611" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" FontSize="16" BorderBrush="Black"/>
         <TextBox x:Name="EnterMessage_TexBox" HorizontalAlignment="Left" Height="45" Margin="189,389,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="385"/>
         <Button x:Name="SendPublic_Button" Content="SEND PUBLIC" Margin="702,389,0,0" Click="Send_Button_Click" HorizontalAlignment="Left" Width="98" Height="23" VerticalAlignment="Top"/>
@@ -18,6 +18,7 @@
         <Label x:Name="CreateRoom_Button" Content="Room Name:" Margin="0,388,0,22" HorizontalAlignment="Left" Width="94"/>
         <Button x:Name="CreateRoom_Buton" Content="CREATE ROOM" Margin="94,388,0,0" Height="46" VerticalAlignment="Top" HorizontalAlignment="Left" Width="95" Click="CreateRoom_Buton_Click"/>
         <TextBox x:Name="CreateRoom_TextBox" Margin="0,412,0,0" TextWrapping="Wrap" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" Width="94"/>
+        <ListBox x:Name="UserOnline_ListBox" Height="359" Margin="702,30,0,0" VerticalAlignment="Top" d:ItemsSource="{d:SampleData ItemCount=5}" HorizontalAlignment="Left" Width="98"/>
 
     </Grid>
 </Window>
