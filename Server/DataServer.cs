@@ -13,10 +13,15 @@ namespace Server
     internal class DataServer : DataServerInterface
     {
         private ChatServer.Database db = new ChatServer.Database();
-        // Try branch ChatRoom //
+
         public int GetNumEntries()
         {
             return db.GetTotalUsers();
+        }
+
+        public int GetNumChatRoom()
+        {
+            return db.GetTotalRoom();
         }
 
         public bool AddUser(string username)
@@ -28,37 +33,22 @@ namespace Server
             }
             else
             {
-                db.addUser(username);
+                db.AddUser(username);
                 added = true;
             }
             return added;
         }
 
-        public List<string> GetListOfChatRooms()
-        {   
-            List<string> roomList = new List<string>();
-            for (int i=0; i<db.GetTotalRoom(); i++)
-            {
-                string roomName;
-                db.GetRoomNameByIndex(i, out roomName);
-                roomList.Add(roomName);
-            }
-            return roomList;
-        }
-
-        public string CreateChatRoom(string roomName)
+        public string CreateChatRoom(string roomName, string username)
         {
-            string created;
-            if (CheckRoomExisted(roomName))
+            string newRoomName = null;
+            if (!CheckRoomExisted(roomName))
             {
-                created = null;
+                db.AddChatRoom(roomName);
+                db.AddUserChatRoom(roomName, username);
+                newRoomName = roomName;
             }
-            else
-            {
-                db.addChatRoom(roomName);
-                created = roomName;
-            }
-            return created;
+            return newRoomName;
         }
 
         public string JoinChatRoom(string roomName, string username)
@@ -66,35 +56,90 @@ namespace Server
             string nowRoomName = null;
             if (CheckRoomExisted(roomName))
             {
-                db.addUserChatRoom(roomName, username);
+                db.AddUserChatRoom(roomName, username);
                 nowRoomName = roomName;
             }
             return nowRoomName;
         }
 
-        public void SendMessage(string roomName, string username, string message)
+        public void LeaveChatRoom(string roomName, string username)
         {
             if (CheckRoomExisted(roomName))
             {
-                db.sendMessage(roomName, username + ": " + message);
+                db.RemoveUserChatRoom(roomName, username);
             }
         }
 
-        public List<string> GetPublicMessage(string roomName)
+        public void SendPublicMessage(string roomName, string username, string message)
         {
-            List<string> messages = new List<string>();
-            for (int i=0; i<db.GetTotalRoom(); i++)
+            if (CheckRoomExisted(roomName))
             {
-                string temproomname;
-                db.GetRoomNameByIndex(i, out temproomname);
-                if (temproomname.Equals(roomName))
+                db.SendMessage(roomName, username, null, message);
+            }
+        }
+
+        public void SendPrivateMessage(string roomName, string fromUser, string toUser, string message) 
+        {
+            if (CheckRoomExisted(roomName))
+            {
+                if (CheckUserExistedInRoom(roomName, toUser))
                 {
-                    db.GetRoomPublicMessages(i, out messages);
+                    db.SendMessage(roomName, fromUser, toUser, message);
+                }
+            }
+        }
+
+        public List<string> GetMessages(string roomName, string username)
+        {
+            List<string> messagesString = new List<string>();
+            for (int i = 0; i < db.GetTotalRoom(); i++)
+            {
+                db.GetRoomNameByIndex(i, out string temproomname);
+                if (roomName.Equals(temproomname))
+                {
+                    db.GetRoomMessages(i, out List<Message> messages);
+                    for (int j=0; j<messages.Count; j++)
+                    {
+                        string toAdd;
+                        if (username.Equals(messages[j].fromUser) || username.Equals(messages[j].toUser))
+                        {
+                            if (messages[j].toUser == null)
+                            {
+                                toAdd = "(Public) " + messages[j].fromUser  + ": " + messages[j].message;
+                            }
+                            else
+                            {
+                                toAdd = "(Private) " + messages[j].fromUser + " to " + messages[j].toUser + ": " + messages[j].message;
+                            }
+                        }
+                        else
+                        {
+                            toAdd = "(Public) " + messages[j].fromUser + ": " + messages[j].message;
+                        }
+                        messagesString.Add(toAdd);
+                    }
                     break;
                 }
             }
 
-            return messages;
+            return messagesString;
+        }
+
+        public List<string> GetChatRoomList()
+        {
+            List<string> roomNameList = new List<string>();
+            for (int i = 0; i < db.GetTotalRoom(); i++)
+            {
+                db.GetRoomNameByIndex(i, out string roomName);
+                roomNameList.Add(roomName);
+            }
+            return roomNameList;
+        }
+
+        public HashSet<string> GetUserOnline(string roomName)
+        {
+            HashSet<string> userOnline = db.GetUserListInRoom(roomName);
+            return userOnline;
         }
 
         private bool CheckUserExisted(string username)
@@ -102,8 +147,7 @@ namespace Server
             bool existed = false;
             for (int i=0; i<db.GetTotalUsers(); i++) 
             {
-                string tempusername = null;
-                db.GetUsernameByIndex(i, out tempusername);
+                db.GetUsernameByIndex(i, out string tempusername);
                 if (username.Equals(tempusername))
                 {
                     existed = true;
@@ -118,14 +162,20 @@ namespace Server
             bool existed = false;
             for (int i = 0; i < db.GetTotalRoom(); i++)
             {
-                string temproomname = null;
-                db.GetRoomNameByIndex(i, out temproomname);
+                db.GetRoomNameByIndex(i, out string temproomname);
                 if (roomName.Equals(temproomname))
                 {
                     existed = true;
                     break;
                 }
             }
+            return existed;
+        }
+
+        private bool CheckUserExistedInRoom(string roomName, string username)
+        {
+            HashSet<string> userOnline = db.GetUserListInRoom(roomName);
+            bool existed = userOnline.Contains(username);
             return existed;
         }
     }

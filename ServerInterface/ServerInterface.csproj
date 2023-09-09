@@ -45,5 +45,11 @@
     <Compile Include="DataServerInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ChatServer\Database.csproj">
+      <Project>{f1a6c5b4-a3b2-42ea-89fa-aaa5ca3eaaba}</Project>
+      <Name>Database</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
