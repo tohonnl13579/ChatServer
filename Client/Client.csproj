@@ -52,8 +52,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="ChatRoom_Interface.xaml">
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="ChatRoom.xaml">
@@ -64,9 +63,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
+    <Compile Include="ChatRoom_Interface.xaml.cs">
+      <DependentUpon>ChatRoom_Interface.xaml</DependentUpon>
     </Compile>
     <Compile Include="ChatRoom.xaml.cs">
       <DependentUpon>ChatRoom.xaml</DependentUpon>
