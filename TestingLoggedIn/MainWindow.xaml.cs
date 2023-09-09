@@ -46,6 +46,7 @@ namespace TestingLoggedIn
             if (item != null)
             {
                 chatRoom = foob.JoinChatRoom(item.Content.ToString(), username);
+                ChatRoom_Label.Content = chatRoom;
             }
             UpdateMessages();
             UpdateUsers();
@@ -127,6 +128,7 @@ namespace TestingLoggedIn
                 if (newRoomName != null)
                 {
                     chatRoom = newRoomName;
+                    ChatRoom_Label.Content = chatRoom;
                     UpdateRooms();
                     UpdateMessages();
                     UpdateUsers();
