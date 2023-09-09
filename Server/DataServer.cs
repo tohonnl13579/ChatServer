@@ -28,7 +28,7 @@ namespace Server
             }
             else
             {
-                db.addUser(username);
+                db.AddUser(username);
                 added = true;
             }
             return added;
@@ -39,8 +39,7 @@ namespace Server
             List<string> roomList = new List<string>();
             for (int i=0; i<db.GetTotalRoom(); i++)
             {
-                string roomName;
-                db.GetRoomNameByIndex(i, out roomName);
+                db.GetRoomNameByIndex(i, out string roomName);
                 roomList.Add(roomName);
             }
             return roomList;
@@ -55,7 +54,7 @@ namespace Server
             }
             else
             {
-                db.addChatRoom(roomName);
+                db.AddChatRoom(roomName);
                 created = roomName;
             }
             return created;
@@ -66,35 +65,58 @@ namespace Server
             string nowRoomName = null;
             if (CheckRoomExisted(roomName))
             {
-                db.addUserChatRoom(roomName, username);
+                db.AddUserChatRoom(roomName, username);
                 nowRoomName = roomName;
             }
             return nowRoomName;
         }
 
-        public void SendMessage(string roomName, string username, string message)
+        public void SendPublicMessage(string roomName, string username, string message)
         {
             if (CheckRoomExisted(roomName))
             {
-                db.sendMessage(roomName, username + ": " + message);
+                db.SendMessage(roomName, username, null, message);
             }
         }
 
-        public List<string> GetPublicMessage(string roomName)
+        public void SendPrivateMessage(string roomName, string fromUser, string toUser, string message) 
         {
-            List<string> messages = new List<string>();
-            for (int i=0; i<db.GetTotalRoom(); i++)
+            if (CheckRoomExisted(roomName))
             {
-                string temproomname;
-                db.GetRoomNameByIndex(i, out temproomname);
-                if (temproomname.Equals(roomName))
+                db.SendMessage(roomName, fromUser, toUser, message);
+            }
+        }
+
+        public List<string> GetMessages(string roomName, string username)
+        {
+            List<string> messagesString = new List<string>();
+            for (int i = 0; i < db.GetTotalRoom(); i++)
+            {
+                db.GetRoomNameByIndex(i, out string temproomname);
+                if (roomName.Equals(temproomname))
                 {
-                    db.GetRoomPublicMessages(i, out messages);
+                    db.GetRoomMessages(i, out List<Message> messages);
+                    for (int j=0; j<messages.Count; j++)
+                    {
+                        if (username.Equals(messages[j].fromUser) || username.Equals(messages[j].toUser))
+                        {
+                            string toAdd = "";
+                            if (messages[j].toUser == null)
+                            {
+                                toAdd += "(Public) " + messages[j].fromUser  + ": ";
+                            }
+                            else
+                            {
+                                toAdd += "(Private) " + messages[j].fromUser + " to " + messages[j].toUser + ": ";
+                            }
+                            messagesString.Add(toAdd);
+                        }
+                    }
                     break;
                 }
             }
 
-            return messages;
+            return messagesString;
         }
 
         private bool CheckUserExisted(string username)
@@ -102,8 +124,7 @@ namespace Server
             bool existed = false;
             for (int i=0; i<db.GetTotalUsers(); i++) 
             {
-                string tempusername = null;
-                db.GetUsernameByIndex(i, out tempusername);
+                db.GetUsernameByIndex(i, out string tempusername);
                 if (username.Equals(tempusername))
                 {
                     existed = true;
@@ -118,8 +139,7 @@ namespace Server
             bool existed = false;
             for (int i = 0; i < db.GetTotalRoom(); i++)
             {
-                string temproomname = null;
-                db.GetRoomNameByIndex(i, out temproomname);
+                db.GetRoomNameByIndex(i, out string temproomname);
                 if (roomName.Equals(temproomname))
                 {
                     existed = true;

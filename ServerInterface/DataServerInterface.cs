@@ -56,18 +56,24 @@ namespace ServerInterface
         string JoinChatRoom(string roomName, string username);
 
         /* 
-         * SendMessage:
-         * Send message in given room name.
+         * SendPublicMessage:
+         * Send public message in given room name.
          */
-        void SendMessage(string roomName, string username, string message);
+        void SendPublicMessage(string roomName, string username, string message);
 
         /* 
-         * GetPublicMessage:
-         * Get chat room public messages with given room name.
-         * Return the public messages in the room name if there is any.
+         * SendPrivatecMessage:
+         * Send public message in given room name.
+         */
+        void SendPrivateMessage(string roomName, string fromUser, string toUser, string message);
+
+        /* 
+         * GetMessages:
+         * Get all messages which is visible to current user with given room name and username.
+         * Return the messages in the room if there is any.
          */
         [OperationContract]
-        List<string> GetPublicMessage(string roomName);
+        List<string> GetMessages(string roomName, string username);
 
     }
 }

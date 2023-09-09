@@ -10,13 +10,13 @@ namespace Database
     {
         public string roomName;
         public List<string> roomUsers;
-        public List<string> messages;
+        public List<Message> messages;
 
         public ChatRoom()
         {
             roomName = null;
             roomUsers = new List<string>();
-            messages = new List<string>();
+            messages = new List<Message>();
         }
     }
 }

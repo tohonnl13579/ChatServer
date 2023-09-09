@@ -17,19 +17,19 @@ namespace ChatServer
             chatrooms = new List<ChatRoom>();
         }
 
-        public void addUser(string username)
+        public void AddUser(string username)
         {
             usernames.Add(username);
         }
 
-        public void addChatRoom(string chatRoomName)
+        public void AddChatRoom(string chatRoomName)
         {
             ChatRoom chatRoom = new ChatRoom();
             chatRoom.roomName = chatRoomName;
             chatrooms.Add(chatRoom);
         }
 
-        public void addUserChatRoom(string roomName, string username)
+        public void AddUserChatRoom(string roomName, string username)
         {
             for (int i=0; i<chatrooms.Count; i++)
             {
@@ -40,13 +40,17 @@ namespace ChatServer
             }
         }
 
-        public void sendMessage(string roomName, string message)
+        public void SendMessage(string roomName, string fromUser, string toUser, string message)
         {
             for (int i = 0; i < chatrooms.Count; i++)
             {
                 if (chatrooms[i].roomName.Equals(roomName))
                 {
-                    chatrooms[i].messages.Add(message);
+                    Message messageItem = new Message();
+                    messageItem.fromUser = fromUser; 
+                    messageItem.toUser = toUser;
+                    messageItem.message = message;
+                    chatrooms[i].messages.Add(messageItem);
                 }
             }
         }
@@ -61,9 +65,9 @@ namespace ChatServer
             roomName = chatrooms[index].roomName;
         }
 
-        public void GetRoomPublicMessages(int roomID, out List<string> publicMessages)
+        public void GetRoomMessages(int roomID, out List<Message> messages)
         {
-            publicMessages = chatrooms[roomID].messages;
+            messages = chatrooms[roomID].messages;
         }
 
         public int GetTotalUsers()
