@@ -22,17 +22,29 @@ namespace Client
     // </summary>
     // 
 
-    //Ariel Was Here
+    //Ariel Doing dis :)
+    //Now on "Fix" Branch
     public partial class MainWindow : Window
     {
         private DataServerInterface foob;
+        ChannelFactory<DataServerInterface> foobFactory;
+        private string loggedUser;
         public MainWindow()
         {
             InitializeComponent();
-            ChannelFactory<DataServerInterface> foobFactory;
-            NetTcpBinding tcp = new NetTcpBinding();
+            //ChannelFactory<DataServerInterface> foobFactory;
+            connectToServer();
+
+            //Set this button to be invisible first
+            Button_EnterChatRoom.Visibility = Visibility.Hidden;
+            Button_EnterChatRoom.IsEnabled = false;
+        }
+
+        private void connectToServer()
+        {
+            NetTcpBinding tcpB = new NetTcpBinding();
             string URL = "net.tcp://localhost:8100/DataService";
-            foobFactory = new ChannelFactory<DataServerInterface>(tcp, URL);
+            foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();
         }
 
@@ -51,12 +63,34 @@ namespace Client
                 {
                     Label_Alert.Content = "Login Successfully";
                     // Switch to another page with the username //
+
+                    loggedUser = username;
+                    Label_Logged.Content = ("Logged as: " + loggedUser);
+                    Button_EnterChatRoom.IsEnabled = true;
+                    Button_EnterChatRoom.Visibility = Visibility.Visible;
+
                 }
                 else
                 {
-                    Label_Alert.Content = "User Existed!";
+                    Label_Alert.Content = "User Already Exists!";
                     // Stay at login page //
                 }
+            }
+        }
+
+        private void EnterChatRoom_Click(object sender, RoutedEventArgs e)
+        {
+            //Attempt to close the connection, so the other window can connect
+            try
+            {
+                ((ICommunicationObject)foob).Close();
+                foobFactory.Close();
+                //Enter chatroom window
+            }
+            catch (Exception eR)
+            {
+                Console.WriteLine(eR.Message);
+                connectToServer();
             }
         }
     }
