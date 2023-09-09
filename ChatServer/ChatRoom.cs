@@ -13,6 +13,7 @@ namespace Database
 
         ChatRoom()
         {
+            // try commit 2//
             roomName = null;
             roomUsers = new List<string>();
         }
