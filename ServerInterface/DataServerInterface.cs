@@ -19,7 +19,7 @@ namespace ServerInterface
         int GetNumEntries();
 
         /* 
-         * addUser:
+         * AddUser:
          * Add user into database after successfully login.
          * Return true if successfully login (username not existed).
          * Return false if failed to login (username existed).
@@ -30,10 +30,15 @@ namespace ServerInterface
 
 
         // FUNCTIONS FOR LOGGED IN PAGE //
-        [OperationBehavior]
-        //void GetListOfChatRooms(out List<string> roomName, );
         /* 
-         * createChatRoom:
+         * GetListOfChatRooms:
+         * Get list of chat room name.
+         */
+        [OperationBehavior]
+        List<string> GetListOfChatRooms();
+
+        /* 
+         * CreateChatRoom:
          * Create chat room with given room name.
          * Return the room name if the room is succefully created.
          * Return null if the chat room is failed to create (Room name used).
@@ -42,7 +47,7 @@ namespace ServerInterface
         string CreateChatRoom(string roomName);
 
         /* 
-         * joinChatRoom:
+         * JoinChatRoom:
          * Join chat room with given room name.
          * Return the room name if successfully join into a room (Room exists).
          * Return null if the fail to join a room (Room not exist).
@@ -50,6 +55,10 @@ namespace ServerInterface
         [OperationContract]
         string JoinChatRoom(string roomName, string username);
 
+        /* 
+         * SendMessage:
+         * Send message in given room name.
+         */
         void SendMessage(string roomName, string username, string message);
 
         /* 

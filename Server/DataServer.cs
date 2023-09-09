@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text;
 using System.Threading.Tasks;
 using ChatServer;
@@ -31,6 +32,18 @@ namespace Server
                 added = true;
             }
             return added;
+        }
+
+        public List<string> GetListOfChatRooms()
+        {   
+            List<string> roomList = new List<string>();
+            for (int i=0; i<db.GetTotalRoom(); i++)
+            {
+                string roomName;
+                db.GetRoomNameByIndex(i, out roomName);
+                roomList.Add(roomName);
+            }
+            return roomList;
         }
 
         public string CreateChatRoom(string roomName)
