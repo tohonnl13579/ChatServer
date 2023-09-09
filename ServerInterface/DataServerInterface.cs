@@ -25,11 +25,13 @@ namespace ServerInterface
          * Return false if failed to login (username existed).
          */
         [OperationContract]
-        bool addUser(string username);
+        bool AddUser(string username);
 
 
 
         // FUNCTIONS FOR LOGGED IN PAGE //
+        [OperationBehavior]
+        //void GetListOfChatRooms(out List<string> roomName, );
         /* 
          * createChatRoom:
          * Create chat room with given room name.
@@ -37,7 +39,7 @@ namespace ServerInterface
          * Return null if the chat room is failed to create (Room name used).
          */
         [OperationContract]
-        string createChatRoom(string roomName);
+        string CreateChatRoom(string roomName);
 
         /* 
          * joinChatRoom:
@@ -46,15 +48,17 @@ namespace ServerInterface
          * Return null if the fail to join a room (Room not exist).
          */
         [OperationContract]
-        string joinChatRoom(string roomName, string username);
+        string JoinChatRoom(string roomName, string username);
+
+        void SendMessage(string roomName, string username, string message);
 
         /* 
-         * GetRoomPublicMessage:
+         * GetPublicMessage:
          * Get chat room public messages with given room name.
          * Return the public messages in the room name if there is any.
          */
         [OperationContract]
-        List<string> GetRoomPublicMessage(string roomName);
+        List<string> GetPublicMessage(string roomName);
 
     }
 }

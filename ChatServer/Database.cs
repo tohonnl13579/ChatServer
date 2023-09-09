@@ -40,6 +40,17 @@ namespace ChatServer
             }
         }
 
+        public void sendMessage(string roomName, string message)
+        {
+            for (int i = 0; i < chatrooms.Count; i++)
+            {
+                if (chatrooms[i].roomName.Equals(roomName))
+                {
+                    chatrooms[i].messages.Add(message);
+                }
+            }
+        }
+
         public void GetUsernameByIndex(int index, out string username) 
         {
             username = usernames[index];

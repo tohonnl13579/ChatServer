@@ -18,7 +18,7 @@ namespace Server
             return db.GetTotalUsers();
         }
 
-        public bool addUser(string username)
+        public bool AddUser(string username)
         {
             bool added;
             if (CheckUserExisted(username))
@@ -33,7 +33,7 @@ namespace Server
             return added;
         }
 
-        public string createChatRoom(string roomName)
+        public string CreateChatRoom(string roomName)
         {
             string created;
             if (CheckRoomExisted(roomName))
@@ -48,24 +48,26 @@ namespace Server
             return created;
         }
 
-        public string joinChatRoom(string roomName, string username)
+        public string JoinChatRoom(string roomName, string username)
         {
             string nowRoomName = null;
-            for (int i = 0; i < db.GetTotalRoom(); i++)
+            if (CheckRoomExisted(roomName))
             {
-                string temproomname;
-                db.GetRoomNameByIndex(i, out temproomname);
-                if (roomName.Equals(temproomname))
-                {
-                    db.addUserChatRoom(roomName, username);
-                    nowRoomName = roomName;
-                    break;
-                }
+                db.addUserChatRoom(roomName, username);
+                nowRoomName = roomName;
             }
             return nowRoomName;
         }
 
-        public List<string> GetRoomPublicMessage(string roomName)
+        public void SendMessage(string roomName, string username, string message)
+        {
+            if (CheckRoomExisted(roomName))
+            {
+                db.sendMessage(roomName, username + ": " + message);
+            }
+        }
+
+        public List<string> GetPublicMessage(string roomName)
         {
             List<string> messages = new List<string>();
             for (int i=0; i<db.GetTotalRoom(); i++)
