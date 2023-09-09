@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ChatServer;
+using Database;
 using ServerInterface;
 
 namespace Server
@@ -14,12 +15,7 @@ namespace Server
 
         public int GetNumEntries()
         {
-            return db.GetNumRecords();
-        }
-
-        public void GetUsernameForEntry(int index, out string username)
-        {
-            db.GetUsernameByIndex(index, out username);
+            return db.GetTotalUsers();
         }
 
         public bool addUser(string username)
@@ -37,14 +33,79 @@ namespace Server
             return added;
         }
 
+        public string createChatRoom(string roomName)
+        {
+            string created;
+            if (CheckRoomExisted(roomName))
+            {
+                created = null;
+            }
+            else
+            {
+                db.addChatRoom(roomName);
+                created = roomName;
+            }
+            return created;
+        }
+
+        public string joinChatRoom(string roomName, string username)
+        {
+            string nowRoomName = null;
+            for (int i = 0; i < db.GetTotalRoom(); i++)
+            {
+                string temproomname;
+                db.GetRoomNameByIndex(i, out temproomname);
+                if (roomName.Equals(temproomname))
+                {
+                    db.addUserChatRoom(roomName, username);
+                    nowRoomName = roomName;
+                    break;
+                }
+            }
+            return nowRoomName;
+        }
+
+        public List<string> GetRoomPublicMessage(string roomName)
+        {
+            List<string> messages = new List<string>();
+            for (int i=0; i<db.GetTotalRoom(); i++)
+            {
+                string temproomname;
+                db.GetRoomNameByIndex(i, out temproomname);
+                if (temproomname.Equals(roomName))
+                {
+                    db.GetRoomPublicMessages(i, out messages);
+                    break;
+                }
+            }
+
+            return messages;
+        }
+
         private bool CheckUserExisted(string username)
         {
             bool existed = false;
-            for (int i=0; i<db.GetNumRecords(); i++) 
+            for (int i=0; i<db.GetTotalUsers(); i++) 
             {
                 string tempusername = null;
                 db.GetUsernameByIndex(i, out tempusername);
                 if (username.Equals(tempusername))
+                {
+                    existed = true;
+                    break;
+                }
+            }
+            return existed;
+        }
+
+        private bool CheckRoomExisted(string roomName)
+        {
+            bool existed = false;
+            for (int i = 0; i < db.GetTotalRoom(); i++)
+            {
+                string temproomname = null;
+                db.GetRoomNameByIndex(i, out temproomname);
+                if (roomName.Equals(temproomname))
                 {
                     existed = true;
                     break;

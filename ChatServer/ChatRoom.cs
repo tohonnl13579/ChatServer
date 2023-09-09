@@ -8,13 +8,15 @@ namespace Database
 {
     public class ChatRoom
     {
-        string roomName;
-        List<string> roomUsers;
+        public string roomName;
+        public List<string> roomUsers;
+        public List<string> messages;
 
-        ChatRoom()
+        public ChatRoom()
         {
             roomName = null;
             roomUsers = new List<string>();
+            messages = new List<string>();
         }
     }
 }
