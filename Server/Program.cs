@@ -20,6 +20,8 @@ namespace Server
             host.Open();
             Console.WriteLine("Server is now online!");
             Console.ReadLine();
+            Console.WriteLine(" Press enter to close server...");
+            Console.ReadLine();
             host.Close();
         }
     }
