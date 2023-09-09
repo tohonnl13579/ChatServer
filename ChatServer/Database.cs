@@ -9,7 +9,6 @@ namespace ChatServer
 {
     public class Database
     {
-        // Try branch commit //
         List<string> usernames;
         List<ChatRoom> chatrooms;
         public Database() 
