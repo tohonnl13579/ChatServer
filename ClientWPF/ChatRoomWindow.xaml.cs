@@ -16,8 +16,7 @@ using System.Windows.Shapes;
 
 namespace ClientWPF
 {
-    //This is the window that contains the room selection and chat rooms
-
+    /*This is the window that contains the room selection and chat rooms*/
     public partial class ChatRoomWindow : Window
     {
         private DataServerInterface foob;

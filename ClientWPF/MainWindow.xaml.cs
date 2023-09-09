@@ -27,6 +27,7 @@ namespace ClientWPF
         {
             InitializeComponent();
 
+            //Set all the default state of all window elements where needed
             Warning_Label.Content = "";
             Username_TextBox.Text = "";
             LoggedIn_Label.Content = "Logged in as: ";
@@ -36,6 +37,7 @@ namespace ClientWPF
             connectToServer();
         }
 
+        //Used to reconnect to the server
         private void connectToServer()
         {
             NetTcpBinding tcpB = new NetTcpBinding();
@@ -51,6 +53,7 @@ namespace ClientWPF
             string username = Username_TextBox.Text;
             if (username.Length == 0)
             {
+                //Case of Empty given field by user
                 Warning_Label.Content = "Username field should not be empty!";
             }
             else
@@ -58,6 +61,7 @@ namespace ClientWPF
                 bool logged = foob.addUser(username);
                 if (logged)
                 {
+                    //Enable the "Enter ChatRoom Button"
                     Warning_Label.Content = "Logged in successfully!";
                     loggedUser = username;
                     LoggedIn_Label.Content = "Logged in as: " + loggedUser;
@@ -71,6 +75,7 @@ namespace ClientWPF
             }
         }
 
+        //This function is called once user is logged in and they press the "Enter ChatRoom Button"
         private void enterChatRoom()
         {
             ChatRoomWindow chatRoomWindow = new ChatRoomWindow(loggedUser);
@@ -92,11 +97,13 @@ namespace ClientWPF
             {
                 ((ICommunicationObject)foob).Close();
                 foobFactory.Close();
+
                 //Enter chatroom window
                 enterChatRoom();
             }
             catch (Exception eR)
             {
+                //If error, catch and try to reconnect to server
                 Console.WriteLine(eR.Message);
                 Warning_Label.Content = eR.Message;
                 connectToServer();
