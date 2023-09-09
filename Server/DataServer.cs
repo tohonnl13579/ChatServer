@@ -13,7 +13,7 @@ namespace Server
     internal class DataServer : DataServerInterface
     {
         private ChatServer.Database db = new ChatServer.Database();
-        // Try branch ChatRoom //
+
         public int GetNumEntries()
         {
             return db.GetTotalUsers();
