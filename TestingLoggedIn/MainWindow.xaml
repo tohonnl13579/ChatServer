@@ -15,6 +15,9 @@
         <TextBox x:Name="ToUser_TextBox" HorizontalAlignment="Left" Height="22" Margin="574,412,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="128"/>
         <Label x:Name="ToUser_Label" Content="To User:" HorizontalAlignment="Left" Height="23" Margin="574,389,0,0" VerticalAlignment="Top" Width="128"/>
         <Button x:Name="SendPrivate_Button" Content="SEND PRIVATE" HorizontalAlignment="Left" Margin="702,412,0,0" VerticalAlignment="Top" Width="98" Height="22" Click="SendPrivate_Button_Click"/>
+        <Label x:Name="CreateRoom_Button" Content="Room Name:" Margin="0,388,0,22" HorizontalAlignment="Left" Width="94"/>
+        <Button x:Name="CreateRoom_Buton" Content="CREATE ROOM" Margin="94,388,0,0" Height="46" VerticalAlignment="Top" HorizontalAlignment="Left" Width="95" Click="CreateRoom_Buton_Click"/>
+        <TextBox x:Name="CreateRoom_TextBox" Margin="0,412,0,0" TextWrapping="Wrap" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" Width="94"/>
 
     </Grid>
 </Window>

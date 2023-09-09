@@ -50,7 +50,7 @@ namespace Server
             return roomNameList;
         }
 
-        public string CreateChatRoom(string roomName)
+        public string CreateChatRoom(string roomName, string username)
         {
             string created;
             if (CheckRoomExisted(roomName))
@@ -59,6 +59,7 @@ namespace Server
             }
             else
             {
+                db.AddUserChatRoom(roomName, username);
                 db.AddChatRoom(roomName);
                 created = roomName;
             }

@@ -24,7 +24,7 @@ namespace TestingLoggedIn
     {
         private DataServerInterface foob;
         private ChannelFactory<DataServerInterface> foobFactory;
-        private string username = "jason";
+        private string username = "tohonnl";
         private string chatRoom = null;
         public MainWindow()
         {
@@ -33,22 +33,17 @@ namespace TestingLoggedIn
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();
             InitializeComponent();
-            List<string> roomList = foob.GetChatRoomList();
-            for (int i = 0; i< roomList.Count; i++)
-            {
-                ListBoxItem item = new ListBoxItem();
-                item.Content = roomList[i];
-                RoomList_ListBox.Items.Add(item);
-            }
+            UpdateRoomList();
         }
 
         private void RoomList_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListBoxItem item = (ListBoxItem) RoomList_ListBox.SelectedItem;
-            chatRoom = item.Content.ToString();
-            ChatRoom_Label.Content = chatRoom;
-            UpdateMessages(chatRoom);
-
+            if (item != null)
+            {
+                chatRoom = item.Content.ToString();
+            }
+            UpdateMessages();
         }
 
         private void Send_Button_Click(object sender, RoutedEventArgs e)
@@ -57,19 +52,35 @@ namespace TestingLoggedIn
             if (chatRoom != null && message != "")
             {
                 foob.SendPublicMessage(chatRoom, username, message);
-                UpdateMessages(chatRoom);
+                UpdateMessages();
             }
         }
 
-        private void UpdateMessages(string roomName)
+        private void UpdateMessages()
         {
-            List<string> messages = foob.GetMessages(roomName, username);
+            List<string> messages = foob.GetMessages(chatRoom, username);
             Message_ListBox.Items.Clear();
-            for (int i = 0; i < messages.Count; i++)
+            if (chatRoom != null)
+            {
+                ChatRoom_Label.Content = chatRoom;
+                for (int i = 0; i < messages.Count; i++)
+                {
+                    ListBoxItem item = new ListBoxItem();
+                    item.Content = messages[i];
+                    Message_ListBox.Items.Add(item);
+                }
+            }
+        }
+
+        private void UpdateRoomList()
+        {
+            List<string> roomList = foob.GetChatRoomList();
+            RoomList_ListBox.Items.Clear();
+            for (int i = 0; i < roomList.Count; i++)
             {
                 ListBoxItem item = new ListBoxItem();
-                item.Content = messages[i];
-                Message_ListBox.Items.Add(item);
+                item.Content = roomList[i];
+                RoomList_ListBox.Items.Add(item);
             }
         }
 
@@ -80,7 +91,22 @@ namespace TestingLoggedIn
             if (chatRoom != null && toUser != "" && message != "")
             {
                 foob.SendPrivateMessage(chatRoom, username, toUser, message);
-                UpdateMessages(chatRoom);
+                UpdateMessages();
+            }
+        }
+
+        private void CreateRoom_Buton_Click(object sender, RoutedEventArgs e)
+        {
+            string intendName = CreateRoom_TextBox.Text;
+            if (intendName != "")
+            {
+                string newRoomName = foob.CreateChatRoom(intendName, username);
+                if (newRoomName != null)
+                {
+                    chatRoom = newRoomName;
+                    UpdateRoomList();
+                    UpdateMessages();
+                }
             }
         }
     }

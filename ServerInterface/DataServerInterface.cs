@@ -24,7 +24,7 @@ namespace ServerInterface
         int GetNumChatRoom();
 
         [OperationContract]
-        string CreateChatRoom(string roomName);
+        string CreateChatRoom(string roomName, string username);
 
         [OperationContract]
         string JoinChatRoom(string roomName, string username);

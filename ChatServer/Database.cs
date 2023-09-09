@@ -26,8 +26,8 @@ namespace ChatServer
             ms.toUser = null;
             ms.message = "Public!";
             Message ms2 = new Message();
-            ms2.fromUser = "tohonnl";
-            ms2.toUser = "jason";
+            ms2.fromUser = "Admin";
+            ms2.toUser = "tohonnl";
             ms2.message = "Private!";
             room3.messages.Add(ms);
             room3.messages.Add(ms2);
