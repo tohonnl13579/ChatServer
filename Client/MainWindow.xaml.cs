@@ -17,9 +17,12 @@ using System.Windows.Shapes;
 
 namespace Client
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    // <summary>
+    // Interaction logic for MainWindow.xaml
+    // </summary>
+    // 
+
+    //Ariel Was Here
     public partial class MainWindow : Window
     {
         private DataServerInterface foob;
