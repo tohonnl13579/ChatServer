@@ -7,10 +7,12 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid Background="#FFCBCBCB">
-        <Button x:Name="LoginButton" Content="Log In" HorizontalAlignment="Left" Margin="345,286,0,0" VerticalAlignment="Top" Height="30" Width="90" Click="LoginButton_Click" FontSize="14"/>
-        <TextBox x:Name="Username_TextBox" HorizontalAlignment="Left" Margin="291,241,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="199" Height="28" FontSize="15"/>
-        <Label x:Name="Username" Content="Username:" HorizontalAlignment="Left" Margin="203,241,0,0" VerticalAlignment="Top" FontSize="15" FontWeight="Bold"/>
-        <Label x:Name="Warning_Label" Content="Label" HorizontalAlignment="Left" Margin="375,194,0,0" VerticalAlignment="Top" FontSize="15" FontWeight="DemiBold" Foreground="DarkRed"/>
+        <Button x:Name="LoginButton" Content="Log In" HorizontalAlignment="Left" Margin="352,285,0,0" VerticalAlignment="Top" Height="30" Width="90" Click="LoginButton_Click" FontSize="14"/>
+        <TextBox x:Name="Username_TextBox" HorizontalAlignment="Left" Margin="298,240,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="199" Height="28" FontSize="15"/>
+        <Label x:Name="Username" Content="Username:" HorizontalAlignment="Left" Margin="210,240,0,0" VerticalAlignment="Top" FontSize="15" FontWeight="Bold"/>
+        <Label x:Name="Warning_Label" Content="Label" HorizontalAlignment="Center" Margin="0,375,0,0" VerticalAlignment="Top" FontSize="15" FontWeight="DemiBold" Foreground="DarkRed" RenderTransformOrigin="0.578,-0.215"/>
+        <Button x:Name="Button_EnterChatRoom" Content="Enter ChatRoom" HorizontalAlignment="Center" Margin="0,327,0,0" VerticalAlignment="Top" Height="30" Width="120" Click="EnterChatRoom_Click" FontSize="14"/>
+        <Label x:Name="LoggedIn_Label" Content="Label" HorizontalAlignment="Center" Margin="0,204,0,0" VerticalAlignment="Top" FontSize="15" FontWeight="DemiBold" RenderTransformOrigin="0.578,-0.215" Width="190"/>
 
     </Grid>
 </Window>
