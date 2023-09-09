@@ -41,18 +41,14 @@ namespace Server
 
         public string CreateChatRoom(string roomName, string username)
         {
-            string created;
-            if (CheckRoomExisted(roomName))
-            {
-                created = null;
-            }
-            else
+            string newRoomName = null;
+            if (!CheckRoomExisted(roomName))
             {
                 db.AddChatRoom(roomName);
                 db.AddUserChatRoom(roomName, username);
-                created = roomName;
+                newRoomName = roomName;
             }
-            return created;
+            return newRoomName;
         }
 
         public string JoinChatRoom(string roomName, string username)

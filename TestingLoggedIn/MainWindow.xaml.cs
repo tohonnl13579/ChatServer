@@ -67,7 +67,6 @@ namespace TestingLoggedIn
             Message_ListBox.Items.Clear();
             if (chatRoom != null)
             {
-                ChatRoom_Label.Content = chatRoom;
                 for (int i = 0; i < messages.Count; i++)
                 {
                     ListBoxItem item = new ListBoxItem();
@@ -91,13 +90,16 @@ namespace TestingLoggedIn
 
         private void UpdateUsers()
         {
-            UserOnline_ListBox.Items.Clear();
             HashSet<string> userOnline = foob.GetUserOnline(chatRoom);
-            foreach (string user in userOnline)
+            if (userOnline.Count > 0) 
             {
-                ListBoxItem item = new ListBoxItem();
-                item.Content = user;
-                UserOnline_ListBox.Items.Add(item);
+                UserOnline_ListBox.Items.Clear();
+                foreach (string user in userOnline)
+                {
+                    ListBoxItem item = new ListBoxItem();
+                    item.Content = user;
+                    UserOnline_ListBox.Items.Add(item);
+                }
             }
         }
 
@@ -125,11 +127,11 @@ namespace TestingLoggedIn
                 if (newRoomName != null)
                 {
                     chatRoom = newRoomName;
+                    UpdateRooms();
+                    UpdateMessages();
+                    UpdateUsers();
                 }
             }
-            UpdateRooms();
-            UpdateMessages();
-            UpdateUsers();
         }
     }
 }
