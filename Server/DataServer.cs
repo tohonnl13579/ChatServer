@@ -19,6 +19,11 @@ namespace Server
             return db.GetTotalUsers();
         }
 
+        public int GetNumChatRoom()
+        {
+            return db.GetTotalRoom();
+        }
+
         public bool AddUser(string username)
         {
             bool added;
@@ -34,15 +39,15 @@ namespace Server
             return added;
         }
 
-        public List<string> GetListOfChatRooms()
-        {   
-            List<string> roomList = new List<string>();
-            for (int i=0; i<db.GetTotalRoom(); i++)
+        public List<string> GetChatRoomList()
+        {
+            List<string> roomNameList = new List<string>();
+            for (int i = 0; i < db.GetTotalRoom(); i++)
             {
                 db.GetRoomNameByIndex(i, out string roomName);
-                roomList.Add(roomName);
+                roomNameList.Add(roomName);
             }
-            return roomList;
+            return roomNameList;
         }
 
         public string CreateChatRoom(string roomName)
@@ -83,7 +88,10 @@ namespace Server
         {
             if (CheckRoomExisted(roomName))
             {
-                db.SendMessage(roomName, fromUser, toUser, message);
+                if (CheckUserExistedInRoom(roomName, toUser))
+                {
+                    db.SendMessage(roomName, fromUser, toUser, message);
+                }
             }
         }
 
@@ -98,19 +106,23 @@ namespace Server
                     db.GetRoomMessages(i, out List<Message> messages);
                     for (int j=0; j<messages.Count; j++)
                     {
+                        string toAdd;
                         if (username.Equals(messages[j].fromUser) || username.Equals(messages[j].toUser))
                         {
-                            string toAdd = "";
                             if (messages[j].toUser == null)
                             {
-                                toAdd += "(Public) " + messages[j].fromUser  + ": ";
+                                toAdd = "(Public) " + messages[j].fromUser  + ": " + messages[j].message;
                             }
                             else
                             {
-                                toAdd += "(Private) " + messages[j].fromUser + " to " + messages[j].toUser + ": ";
+                                toAdd = "(Private) " + messages[j].fromUser + " to " + messages[j].toUser + ": " + messages[j].message;
                             }
-                            messagesString.Add(toAdd);
                         }
+                        else
+                        {
+                            toAdd = "(Public) " + messages[j].fromUser + ": " + messages[j].message;
+                        }
+                        messagesString.Add(toAdd);
                     }
                     break;
                 }
@@ -118,6 +130,8 @@ namespace Server
 
             return messagesString;
         }
+
+
 
         private bool CheckUserExisted(string username)
         {
@@ -144,6 +158,21 @@ namespace Server
                 {
                     existed = true;
                     break;
+                }
+            }
+            return existed;
+        }
+
+        private bool CheckUserExistedInRoom(string roomName, string username)
+        {
+            bool existed = false;
+            db.GetUserListInRoom(roomName, out List<string> userList);
+            for (int i=0; i < userList.Count; i++)
+            {
+                if (userList[i].Equals(username)) 
+                { 
+                    existed = true; 
+                    break; 
                 }
             }
             return existed;
