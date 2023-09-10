@@ -23,8 +23,19 @@ namespace TestingLoggedIn
         private ChannelFactory<DataServerInterface> foobFactory;
         private string username = "tohonnl";
         private string chatRoom = null;
+
         public MainWindow()
         {
+            NetTcpBinding tcpB = new NetTcpBinding();
+            string URL = "net.tcp://localhost:8100/DataService";
+            foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
+            foob = foobFactory.CreateChannel();
+            InitializeComponent();
+            UpdateRooms();
+        }
+        public MainWindow(string username)
+        {
+            this.username = username;
             NetTcpBinding tcpB = new NetTcpBinding();
             string URL = "net.tcp://localhost:8100/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);

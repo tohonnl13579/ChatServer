@@ -15,25 +15,6 @@ namespace ChatServer
         {
             usernames = new List<string>();
             chatrooms = new List<ChatRoom>();
-            ChatRoom room1 = new ChatRoom();
-            room1.roomName = "ROOM 1";
-            ChatRoom room2 = new ChatRoom();
-            room2.roomName = "ROOM 2";
-            ChatRoom room3 = new ChatRoom();
-            room3.roomName = "ROOM 3";
-            Message ms = new Message();
-            ms.fromUser = "tohonnl";
-            ms.toUser = null;
-            ms.message = "Public!";
-            Message ms2 = new Message();
-            ms2.fromUser = "Admin";
-            ms2.toUser = "tohonnl";
-            ms2.message = "Private!";
-            room3.messages.Add(ms);
-            room3.messages.Add(ms2);
-            chatrooms.Add(room1);
-            chatrooms.Add(room2);
-            chatrooms.Add(room3);
         }
 
         public void AddUser(string username)

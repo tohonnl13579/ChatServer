@@ -12,7 +12,7 @@ namespace Server
 {
     internal class DataServer : DataServerInterface
     {
-        private ChatServer.Database db = new ChatServer.Database();
+        private static ChatServer.Database db = new ChatServer.Database();
 
         public int GetNumEntries()
         {
@@ -101,22 +101,19 @@ namespace Server
                     for (int j=0; j<messages.Count; j++)
                     {
                         string toAdd;
-                        if (username.Equals(messages[j].fromUser) || username.Equals(messages[j].toUser))
+                        if (messages[j].toUser == null)
                         {
-                            if (messages[j].toUser == null)
-                            {
-                                toAdd = "(Public) " + messages[j].fromUser  + ": " + messages[j].message;
-                            }
-                            else
-                            {
-                                toAdd = "(Private) " + messages[j].fromUser + " to " + messages[j].toUser + ": " + messages[j].message;
-                            }
+                            toAdd = "(Public) " + messages[j].fromUser + ": " + messages[j].message;
+                            messagesString.Add(toAdd);
                         }
                         else
                         {
-                            toAdd = "(Public) " + messages[j].fromUser + ": " + messages[j].message;
+                            if (username.Equals(messages[j].fromUser) || username.Equals(messages[j].toUser))
+                            {
+                                toAdd = "(Private) " + messages[j].fromUser + " to " + messages[j].toUser + ": " + messages[j].message;
+                                messagesString.Add(toAdd);
+                            }
                         }
-                        messagesString.Add(toAdd);
                     }
                     break;
                 }
