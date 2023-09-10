@@ -255,6 +255,7 @@ namespace ClientWPF
                 ListView_ChatWindow.Items.Clear();
                 if(currChatRoom != null)
                 {
+                    //COMMENT: Feels like coding JavaFx ngl...
                     for(int i = 0; i < messageData.Count; i++)
                     {
                         object[] data = messageData[i];
