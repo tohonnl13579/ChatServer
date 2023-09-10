@@ -66,7 +66,7 @@ namespace ClientWPF
             ChatRoomWarning_Label.Content = "";
             try
             {
-                string createdRoomName, roomName;
+                string roomName = "";
                 if (currChatRoom != null)
                 {
                     foob.LeaveChatRoom(currChatRoom, loggedUser);
@@ -76,7 +76,7 @@ namespace ClientWPF
                 roomName = TextBox_CreateRoom.Text;
                 if(roomName != "")
                 {
-                    createdRoomName = foob.CreateChatRoom(roomName, loggedUser);
+                    string createdRoomName = foob.CreateChatRoom(roomName, loggedUser);
                     if(createdRoomName != null)
                     {
                         currChatRoom = createdRoomName;
@@ -212,7 +212,6 @@ namespace ClientWPF
         //Updating GUI Lists
         private void updateRooms()
         {
-            //ChatRoomWarning_Label.Content = "";
             ListBox_RoomList.Items.Clear();
             try
             {
@@ -236,12 +235,15 @@ namespace ClientWPF
 
         }
 
+        // Takes a List of type Object[] in which element is size 2
+        // Object[2] format:
+        // [string userName , Image/File/string]
         private void updateMessages()
         {
             //ChatRoomWarning_Label.Content = "";
             try
             {
-                //Needs Implementing
+                List<object[]> messageData = new List<object[]>();
             }
             catch (CommunicationException cE)
             {
@@ -254,16 +256,32 @@ namespace ClientWPF
             }
         }
 
+        private bool checkStrMsg(Object[] messageObject)
+        {
+            return false;
+        }
+
+        private bool checkImgMsg(Object[] messageObject)
+        {
+            return false;
+        }
+
+        private bool checkFileMsg(Object[] messageObject)
+        {
+            return false;
+        }
+
+
         private void updateUsers()
         {
             //ChatRoomWarning_Label.Content = "";
             try
             {
                 HashSet<string> userOnline = foob.GetUserOnline(currChatRoom);
-                ListBox_UserList.Items.Clear();
                 if (userOnline.Count > 0)
                 {
-                    foreach(string user in userOnline)
+                    ListBox_UserList.Items.Clear();
+                    foreach (string user in userOnline)
                     {
                         ListBoxItem item = new ListBoxItem();
                         item.Content = user;
