@@ -162,8 +162,8 @@ namespace Server
             bool existed = false;
             for (int i = 0; i < db.GetTotalRoom(); i++)
             {
-                db.GetRoomNameByIndex(i, out string temproomname);
-                if (roomName.Equals(temproomname))
+                db.GetRoomNameByIndex(i, out string tempRoomName);
+                if (roomName.Equals(tempRoomName))
                 {
                     existed = true;
                     break;
