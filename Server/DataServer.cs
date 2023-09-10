@@ -12,7 +12,7 @@ namespace Server
 {
     internal class DataServer : DataServerInterface
     {
-        private ChatServer.Database db = new ChatServer.Database();
+        private static ChatServer.Database db = new ChatServer.Database();
         private int jaja = 0;
 
         public void updateField()
