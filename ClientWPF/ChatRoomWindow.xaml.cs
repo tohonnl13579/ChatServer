@@ -1,6 +1,8 @@
 ﻿using ServerInterface;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
@@ -32,6 +34,7 @@ namespace ClientWPF
             TextBox_TextChatBox.Text = "";
             TextBox_PrivateMsgUser.Text = "";
             currChatRoom = null;
+            ListView_ChatWindow.HorizontalContentAlignment = HorizontalAlignment.Left;
             connectToServer();
             updateRooms();
         }
@@ -237,13 +240,85 @@ namespace ClientWPF
 
         // Takes a List of type Object[] in which element is size 2
         // Object[2] format:
-        // [string userName , Image/File/string]
+        // [string identifier , Bitmap imgData/string strData] strData being either a simple message or the contents of a text file
+        // string identifier format:
+        // for public msg: <username>: 
+        // for private msg: <fromUser> -> <toUser>:
         private void updateMessages()
         {
             //ChatRoomWarning_Label.Content = "";
             try
             {
+                //Change to foob.getMessages() once the server side updated to return object[] list
                 List<object[]> messageData = new List<object[]>();
+
+                ListView_ChatWindow.Items.Clear();
+                if(currChatRoom != null)
+                {
+                    for(int i = 0; i < messageData.Count; i++)
+                    {
+                        object[] data = messageData[i];
+                        ListViewItem item = new ListViewItem();
+                        StackPanel msgContainer = new StackPanel();
+
+                        msgContainer.Orientation = Orientation.Vertical;
+                        if (checkStrMsg(data))
+                        {
+                            string identifier = data[0].ToString();
+                            string msg = data[1].ToString();
+
+                            TextBlock identifierBlock = new TextBlock();
+                            identifierBlock.Text = identifier;
+                            identifierBlock.FontWeight = FontWeights.Bold;
+
+                            TextBlock msgBlock = new TextBlock();
+                            msgBlock.Text = msg;
+                            msgBlock.FontSize = msgBlock.FontSize - 1;
+
+                            msgContainer.Children.Add(identifierBlock);
+                            msgContainer.Children.Add(msgBlock);
+                        }
+                        else if (checkImgMsg(data))
+                        {
+                            string identifier = data[0].ToString();
+                            BitmapImage img = convertBitmapToImg((Bitmap)data[1]);
+
+                            TextBlock identifierBlock = new TextBlock();
+                            identifierBlock.Text = identifier;
+                            identifierBlock.FontWeight= FontWeights.Bold;
+
+                            System.Windows.Controls.Image image = new System.Windows.Controls.Image();
+                            image.Source = img;
+                            image.Stretch = Stretch.Uniform;
+                            image.MaxHeight = 100;
+
+                            msgContainer.Children.Add(identifierBlock);
+                            msgContainer.Children.Add(image);
+                        }
+                        else
+                        {
+                            //Invalid object given
+                            ChatRoomWarning_Label.Content = "Invalid data format recieved";
+                            string identifier = data[0].ToString();
+                            string error = "INVALID DATA FORMAT: Index " + i;
+
+                            TextBlock identifierBlock = new TextBlock();
+                            identifierBlock.Text = identifier;
+                            identifierBlock.FontWeight = FontWeights.Bold;
+                            //identifierBlock.Foreground = System.Windows.Media.Brushes.Crimson;
+
+                            TextBlock errorBlock = new TextBlock();
+                            errorBlock.Text = error;
+                            errorBlock.FontWeight = FontWeights.Bold;
+                            errorBlock.Foreground = System.Windows.Media.Brushes.Crimson;
+
+                            msgContainer.Children.Add(identifierBlock);
+                            msgContainer.Children.Add(errorBlock);
+                        }
+                        item.Content = msgContainer;
+                        ListView_ChatWindow.Items.Add(item);
+                    }
+                }
             }
             catch (CommunicationException cE)
             {
@@ -256,21 +331,51 @@ namespace ClientWPF
             }
         }
 
+        //Helper method for updateMessages
         private bool checkStrMsg(Object[] messageObject)
         {
-            return false;
+            bool isValid = false;
+            if (messageObject[1] is string)
+            {
+                isValid = true;
+            }
+            return isValid;
         }
 
+        //Helper method for updateMessages
         private bool checkImgMsg(Object[] messageObject)
         {
-            return false;
+            bool isValid = false;
+            if (messageObject[1] is Bitmap)
+            {
+                isValid = true;
+            }
+            return isValid;
         }
 
-        private bool checkFileMsg(Object[] messageObject)
+        //Used to convert a Bitmap object into a BitmapImage object for display
+        private BitmapImage convertBitmapToImg(Bitmap bitmap)
         {
-            return false;
-        }
+            BitmapImage bitmapImg = new BitmapImage();
 
+            //Some complicated stuff, had to research a bunch of this :P
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                // Save the Bitmap to the memory stream in a specified image format
+                bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+
+                // Resetting the memory stream position to the beginning
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                // Create the BitmapImage from the memory stream
+                bitmapImg.BeginInit();
+                bitmapImg.StreamSource = memoryStream;
+                bitmapImg.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImg.EndInit();
+            }
+
+            return bitmapImg;
+        }
 
         private void updateUsers()
         {
