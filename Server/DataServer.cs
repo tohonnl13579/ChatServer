@@ -13,6 +13,17 @@ namespace Server
     internal class DataServer : DataServerInterface
     {
         private ChatServer.Database db = new ChatServer.Database();
+        private int jaja = 0;
+
+        public void updateField()
+        {
+            jaja = 100;
+        }
+
+        public int getField()
+        {
+            return jaja;
+        }
 
         public int GetNumEntries()
         {
@@ -180,3 +191,12 @@ namespace Server
         }
     }
 }
+
+
+
+
+
+
+
+
+

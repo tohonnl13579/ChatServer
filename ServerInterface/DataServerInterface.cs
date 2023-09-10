@@ -10,6 +10,11 @@ namespace ServerInterface
     [ServiceContract]
     public interface DataServerInterface
     {
+        [OperationContract]
+        void updateField();
+
+        [OperationContract]
+        int getField();
         // FUNCTIONS FOR LOGIN PAGE //
         [OperationContract]
         bool AddUser(string username);
