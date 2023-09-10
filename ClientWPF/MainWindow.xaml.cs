@@ -58,7 +58,7 @@ namespace ClientWPF
             }
             else
             {
-                bool logged = foob.addUser(username);
+                bool logged = foob.AddUser(username);
                 if (logged)
                 {
                     //Enable the "Enter ChatRoom Button"
