@@ -1,4 +1,5 @@
-﻿using ServerInterface;
+﻿//using Microsoft.Win32;
+using ServerInterface;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -6,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,30 +17,34 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ClientWPF
 {
     /*This is the window that contains the room selection and chat rooms*/
-    public partial class ChatRoomWindow : Window
+    public partial class ChatRoomWindow : System.Windows.Window
     {
         private DataServerInterface foob;
         private ChannelFactory<DataServerInterface> foobFactory;
         private string loggedUser, currChatRoom;
         private Bitmap loadedImageData;
-        private string loadedTextFileData;
+        private string loadedTextFileData, selectedFilePath;
         private int maxConnectAtt;
         public ChatRoomWindow(string user)
         {
             InitializeComponent();
+            ChatRoomWarning_Label.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
             loggedUser = user;
             maxConnectAtt = 6;
-            ChatRoomWarning_Label.Content = "HELLLO";
+            ChatRoomWarning_Label.Content = "Welcome to the ChatRoom";
             TextBox_TextChatBox.Text = "";
             TextBox_PrivateMsgUser.Text = "";
             currChatRoom = null;
             loadedImageData = null;
             loadedTextFileData = null;
-            ListView_ChatWindow.HorizontalContentAlignment = HorizontalAlignment.Left;
+            selectedFilePath = null;
+            ListView_ChatWindow.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
             connectToServer();
             updateRooms();
         }
@@ -116,8 +122,8 @@ namespace ClientWPF
             ChatRoomWarning_Label.Content = "";
             try
             {
-                //Needs Implementing
                 ChatRoomWarning_Label.Content = "";
+                fileBrowser();
             }
             catch (CommunicationException cE)
             {
@@ -127,6 +133,58 @@ namespace ClientWPF
             catch (Exception eR)
             {
                 ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
+            }
+        }
+
+        //Mainly a helper function for FileSend_Click, user can choose what file to load from their device
+        private void fileBrowser()
+        {
+            ChatRoomWarning_Label.Content = "";
+            selectedFilePath = null;
+            try
+            {
+                Thread fileDialogThread = new Thread(fileBrowserThread);
+                fileDialogThread.SetApartmentState(ApartmentState.STA); // Set thread to Single-Threaded Apartment mode
+                fileDialogThread.Start();
+
+                //Pauses here as user chooses a file to load
+
+                fileDialogThread.Join();
+
+                if(selectedFilePath == null)
+                {
+                    ChatRoomWarning_Label.Content = "No file was chosen...";
+                    Button_FileSend.Content = "File";
+                }
+                else
+                {
+                    ChatRoomWarning_Label.Content = selectedFilePath;
+                    Button_FileSend.Content = "File Loaded";
+                }
+            }
+            catch(ThreadAbortException tAE)
+            {
+                ChatRoomWarning_Label.Content = "Thread Aborted!: " + tAE.Message;
+            }
+            catch(Exception eR)
+            {
+                ChatRoomWarning_Label.Content = "Exception occured!: " + eR.Message;
+            }
+        }
+
+        //This will be a thread that will run syncronously, which opens the file browser for the user to choose a file
+        private void fileBrowserThread()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            // Setting filters, for this project, only text files and image files are accepted
+            openFileDialog.InitialDirectory = @"C:\";
+            openFileDialog.Filter = "Image Files (*.jpg;*.jpeg;*.png;*.gif;*.bmp)|*.jpg;*.jpeg;*.png;*.gif;*.bmp|Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+
+            // Show the dialog and set the selected file path if user clicked "OK"
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                selectedFilePath = openFileDialog.FileName;
             }
         }
 
@@ -168,7 +226,6 @@ namespace ClientWPF
         private void UserList_Select(object sender, SelectionChangedEventArgs e)
         {
             string userChosen = (string)ListBox_UserList.SelectedItem;
-            //ListBoxItem item = (ListBoxItem)ListBox_UserList.SelectedItem;
             if(userChosen != null)
             {
                 TextBox_PrivateMsgUser.Text = userChosen;
@@ -187,16 +244,18 @@ namespace ClientWPF
             {
                 //Needs Implementing
                 //check if there is any file loaded
-                if(loadedImageData != null || loadedTextFileData != null)
+                if (loadedImageData != null || loadedTextFileData != null)
                 {
+                    //If any file presently loaded, if there is any given message, it will appear on top of the file
 
                     //reset to null once sent
                     loadedImageData = null;
                     loadedTextFileData = null;
+                    Button_FileSend.Content = "File";
                 }
                 else
                 {
-
+                    //If any file is not loaded, then just send a simple string message
                 }
             }
             catch (CommunicationException cE)
@@ -220,14 +279,16 @@ namespace ClientWPF
                 //check if there is any file loaded
                 if (loadedImageData != null || loadedTextFileData != null)
                 {
+                    //If any file presently loaded, if there is any given message, it will appear on top of the file
 
                     //reset to null once sent
                     loadedImageData = null;
                     loadedTextFileData = null;
+                    Button_FileSend.Content = "File";
                 }
                 else
                 {
-
+                    //If any file is not loaded, then just send a simple string message
                 }
             }
             catch (CommunicationException cE)
@@ -288,10 +349,10 @@ namespace ClientWPF
                     for(int i = 0; i < messageData.Count; i++)
                     {
                         object[] data = messageData[i];
-                        ListViewItem item = new ListViewItem();
+                        System.Windows.Controls.ListViewItem item = new System.Windows.Controls.ListViewItem();
                         StackPanel msgContainer = new StackPanel();
 
-                        msgContainer.Orientation = Orientation.Vertical;
+                        msgContainer.Orientation = System.Windows.Controls.Orientation.Vertical;
                         if (checkStrMsg(data))
                         {
                             string identifier = data[0].ToString();
@@ -335,7 +396,6 @@ namespace ClientWPF
                             TextBlock identifierBlock = new TextBlock();
                             identifierBlock.Text = identifier;
                             identifierBlock.FontWeight = FontWeights.Bold;
-                            //identifierBlock.Foreground = System.Windows.Media.Brushes.Crimson;
 
                             TextBlock errorBlock = new TextBlock();
                             errorBlock.Text = error;
@@ -391,19 +451,17 @@ namespace ClientWPF
             //Some complicated stuff, had to research a bunch of this :P
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                // Save the Bitmap to the memory stream in a specified image format
+                // Save the Bitmap to the memory stream as a .png format
                 bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
 
-                // Resetting the memory stream position to the beginning
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
-                // Create the BitmapImage from the memory stream
+                // Creating the BitmapImage object from the memory stream
                 bitmapImg.BeginInit();
                 bitmapImg.StreamSource = memoryStream;
                 bitmapImg.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImg.EndInit();
             }
-
             return bitmapImg;
         }
 
