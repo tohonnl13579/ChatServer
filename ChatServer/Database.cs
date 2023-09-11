@@ -91,6 +91,16 @@ namespace ChatServer
             }
         }
 
+        public void SendImage(string roomName, string fromUser, string toUser, Bitmap imageData)
+        {
+            //Needs Implementation
+        }
+
+        public void SendTextFile(string roomName, string fromUser, string toUser, string[] textFileData)
+        {
+            //Needs Implementation
+        }
+
         public HashSet<string> GetUserListInRoom(string roomName)
         {
             HashSet<string> userList = new HashSet<string>();
