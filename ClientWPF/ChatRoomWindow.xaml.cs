@@ -29,8 +29,10 @@ namespace ClientWPF
         private ChannelFactory<DataServerInterface> foobFactory;
         private string loggedUser, currChatRoom;
         private Bitmap loadedImageData;
-        private string loadedTextFileData, selectedFilePath;
+        private string selectedFilePath;
+        private string[] loadedTextFileData;
         private int maxConnectAtt;
+        List<string[]> textFileDataHolder;
         public ChatRoomWindow(string user)
         {
             InitializeComponent();
@@ -44,6 +46,7 @@ namespace ClientWPF
             loadedImageData = null;
             loadedTextFileData = null;
             selectedFilePath = null;
+            textFileDataHolder = null;
             ListView_ChatWindow.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
             connectToServer();
             updateRooms();
@@ -56,7 +59,7 @@ namespace ClientWPF
             string URL = "net.tcp://localhost:8100/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();
-            Label_LoggedAs.Content = "Logged as: " + loggedUser;
+            Label_LoggedAs.Content = "Logged in as: " + loggedUser;
 
             //Once it reaches maximum connection attempts, client fails to connect to server.
             if(maxConnectAtt <= 0)
@@ -124,6 +127,17 @@ namespace ClientWPF
             {
                 ChatRoomWarning_Label.Content = "";
                 fileBrowser();
+                if (selectedFilePath == null)
+                {
+                    ChatRoomWarning_Label.Content = "No file was chosen...";
+                    Button_FileSend.Content = "File";
+                }
+                else
+                {
+                    ChatRoomWarning_Label.Content = selectedFilePath;
+                    imageAndTextFileReader();
+                    Button_FileSend.Content = "File Loaded";
+                }
             }
             catch (CommunicationException cE)
             {
@@ -150,17 +164,6 @@ namespace ClientWPF
                 //Pauses here as user chooses a file to load
 
                 fileDialogThread.Join();
-
-                if(selectedFilePath == null)
-                {
-                    ChatRoomWarning_Label.Content = "No file was chosen...";
-                    Button_FileSend.Content = "File";
-                }
-                else
-                {
-                    ChatRoomWarning_Label.Content = selectedFilePath;
-                    Button_FileSend.Content = "File Loaded";
-                }
             }
             catch(ThreadAbortException tAE)
             {
@@ -185,6 +188,36 @@ namespace ClientWPF
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 selectedFilePath = openFileDialog.FileName;
+            }
+        }
+
+        private void imageAndTextFileReader()
+        {
+            try
+            {
+                try //First try to parse into Bitmap
+                {
+                    loadedImageData = new Bitmap(selectedFilePath);
+                }
+                catch (ArgumentException aE) //if parsing fails
+                {
+                    loadedImageData = null;
+                    try //Then try to get text file
+                    {
+                        loadedTextFileData = File.ReadAllLines(selectedFilePath);
+                    }
+                    catch (IOException ioE)
+                    {
+                        loadedTextFileData = null;
+                        ChatRoomWarning_Label.Content = "Failed to Parse, Invalid input";
+                    }
+                }
+            }
+            catch (Exception eR)
+            {
+                loadedImageData = null;
+                loadedTextFileData = null;
+                ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
             }
         }
 
@@ -242,11 +275,37 @@ namespace ClientWPF
             ChatRoomWarning_Label.Content = "";
             try
             {
-                //Needs Implementing
+                string message = TextBox_TextChatBox.Text;
                 //check if there is any file loaded
                 if (loadedImageData != null || loadedTextFileData != null)
                 {
                     //If any file presently loaded, if there is any given message, it will appear on top of the file
+                    if (message == null || message.Equals(""))
+                    {
+                        if(loadedImageData != null)
+                        {
+                            foob.SendPublicImgMessage(currChatRoom, loggedUser, loadedImageData);
+                        }
+                        else
+                        {
+                            //THIS IS YET TO BE ADDED
+                            //foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData)
+                        }
+                    }
+                    else
+                    {
+                        foob.SendPublicMessage(currChatRoom, loggedUser, message);
+                        if (loadedImageData != null)
+                        {
+                            foob.SendPublicImgMessage(currChatRoom, loggedUser, loadedImageData);
+                        }
+                        else
+                        {
+                            //THIS IS YET TO BE ADDED
+                            //foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData)
+                        }
+                        TextBox_TextChatBox.Text = "";
+                    }
 
                     //reset to null once sent
                     loadedImageData = null;
@@ -256,7 +315,17 @@ namespace ClientWPF
                 else
                 {
                     //If any file is not loaded, then just send a simple string message
+                    if(message == null || message.Equals(""))
+                    {
+                        ChatRoomWarning_Label.Content = "Text bar is empty";
+                    }
+                    else
+                    {
+                        foob.SendPublicMessage(currChatRoom, loggedUser, message);
+                        TextBox_TextChatBox.Text = "";
+                    }
                 }
+                updateMessages();
             }
             catch (CommunicationException cE)
             {
@@ -275,20 +344,71 @@ namespace ClientWPF
             ChatRoomWarning_Label.Content = "";
             try
             {
-                //Needs Implementing
-                //check if there is any file loaded
-                if (loadedImageData != null || loadedTextFileData != null)
+                if ((TextBox_PrivateMsgUser.Text).Equals(loggedUser))
                 {
-                    //If any file presently loaded, if there is any given message, it will appear on top of the file
+                    ChatRoomWarning_Label.Content = "You cannot send a private message to yourself";
+                }
+                else if ((TextBox_PrivateMsgUser.Text).Equals("") || (TextBox_PrivateMsgUser.Text) == null)
+                {
+                    ChatRoomWarning_Label.Content = "Enter an existing user to send to...";
+                }
+                else if(userExists(TextBox_PrivateMsgUser.Text))
+                {
+                    string message = TextBox_TextChatBox.Text;
+                    //check if there is any file loaded
+                    if (loadedImageData != null || loadedTextFileData != null)
+                    {
+                        //If any file presently loaded, if there is any given message, it will appear on top of the file
+                        if (message == null || message.Equals(""))
+                        {
+                            if (loadedImageData != null)
+                            {
+                                foob.SendPrivateImgMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
+                            }
+                            else
+                            {
+                                //THIS IS YET TO BE ADDED
+                                //foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
+                            }
+                        }
+                        else
+                        {
+                            foob.SendPrivateMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, message);
+                            if (loadedImageData != null)
+                            {
+                                foob.SendPrivateImgMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
+                            }
+                            else
+                            {
+                                //THIS IS YET TO BE ADDED
+                                //foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
+                            }
+                            TextBox_TextChatBox.Text = "";
+                        }
 
-                    //reset to null once sent
-                    loadedImageData = null;
-                    loadedTextFileData = null;
-                    Button_FileSend.Content = "File";
+                        //reset to null once sent
+                        loadedImageData = null;
+                        loadedTextFileData = null;
+                        Button_FileSend.Content = "File";
+                    }
+                    else
+                    {
+                        //If any file is not loaded, then just send a simple string message
+                        if (message == null || message.Equals(""))
+                        {
+                            ChatRoomWarning_Label.Content = "Text bar is empty";
+                        }
+                        else
+                        {
+                            foob.SendPrivateMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, message);
+                            TextBox_TextChatBox.Text = "";
+                        }
+                    }
+                    updateMessages();
                 }
                 else
                 {
-                    //If any file is not loaded, then just send a simple string message
+                    ChatRoomWarning_Label.Content = "This user does not exist!";
                 }
             }
             catch (CommunicationException cE)
@@ -300,6 +420,20 @@ namespace ClientWPF
             {
                 ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
             }
+        }
+
+        private bool userExists(string username)
+        {
+            bool exists = false;
+            HashSet<string> userOnline = foob.GetUserOnline(currChatRoom);
+            foreach (string user in userOnline)
+            {
+                if (user.Equals(username))
+                {
+                    exists = true;
+                }
+            }
+            return exists;
         }
 
         //Updating GUI Lists
@@ -330,8 +464,9 @@ namespace ClientWPF
 
         // Takes a List of type Object[] in which element is size 2
         // Object[2] format:
-        // [string identifier , Bitmap imgData/string strData] strData being either a simple message or the contents of a text file
-        // string identifier format:
+        // [string identifier , Bitmap imgData/string messageData/string[] textFileData]
+        //
+        // string identifier FORMAT:
         // for public msg: <username>: 
         // for private msg: <fromUser> -> <toUser>:
         private void updateMessages()
@@ -341,6 +476,8 @@ namespace ClientWPF
             {
                 //Change to foob.getMessages() once the server side updated to return object[] list
                 List<object[]> messageData = new List<object[]>();
+                textFileDataHolder = new List<string[]>();
+                int buttonIDCounter = 0;
 
                 ListView_ChatWindow.Items.Clear();
                 if(currChatRoom != null)
@@ -353,6 +490,7 @@ namespace ClientWPF
                         StackPanel msgContainer = new StackPanel();
 
                         msgContainer.Orientation = System.Windows.Controls.Orientation.Vertical;
+
                         if (checkStrMsg(data))
                         {
                             string identifier = data[0].ToString();
@@ -386,6 +524,29 @@ namespace ClientWPF
                             msgContainer.Children.Add(identifierBlock);
                             msgContainer.Children.Add(image);
                         }
+                        else if (checkFileMsg(data))
+                        {
+                            string identifier = data[0].ToString();
+                            string[] textFileData = (string[])data[1];
+
+                            TextBlock identifierBlock = new TextBlock();
+                            identifierBlock.Text = identifier;
+                            identifierBlock.FontWeight = FontWeights.Bold;
+
+                            System.Windows.Controls.Button Button_linkToFile = new System.Windows.Controls.Button();
+                            Button_linkToFile.Height = 60;
+                            Button_linkToFile.Width = 100;
+                            Button_linkToFile.Content = "Link to File";
+                            Button_linkToFile.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                            Button_linkToFile.FontWeight = FontWeights.Bold;
+                            Button_linkToFile.Name = buttonIDCounter.ToString();
+                            buttonIDCounter++;
+                            textFileDataHolder.Add(textFileData);
+                            Button_linkToFile.Click += new RoutedEventHandler(linkToFileButton_Click);
+
+                            msgContainer.Children.Add(identifierBlock);
+                            msgContainer.Children.Add(Button_linkToFile);
+                        }
                         else
                         {
                             //Invalid object given
@@ -415,9 +576,34 @@ namespace ClientWPF
                 ChatRoomWarning_Label.Content = "Connection Lost!: " + cE.Message;
                 connectToServer();
             }
+            catch(InvalidCastException iCE)
+            {
+                ChatRoomWarning_Label.Content = "InvalidCastException occured: " + iCE.Message;
+            }
             catch (Exception eR)
             {
                 ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
+            }
+        }
+
+        private void linkToFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            ChatRoomWarning_Label.Content = "";
+            System.Windows.Controls.Button buttonAccess = (System.Windows.Controls.Button)sender;
+            if(buttonAccess != null)
+            {
+                int buttonID = Convert.ToInt32(buttonAccess.Name);
+                /* UNTIL FILEVIEWER IS CREATED
+                FileViewer fileViewerWindow = new FileViewer(textFileDataHolder[buttonID]);
+                if(fileViewerWindow != null)
+                {
+                    fileViewerWindow.Show();
+                }
+                else
+                {
+                    ChatRoomWarning_Label.Content = "Failed to open file";
+                }
+                */
             }
         }
 
@@ -425,7 +611,7 @@ namespace ClientWPF
         private bool checkStrMsg(Object[] messageObject)
         {
             bool isValid = false;
-            if (messageObject[1] is string)
+            if (messageObject[1] is List<string>)
             {
                 isValid = true;
             }
@@ -437,6 +623,17 @@ namespace ClientWPF
         {
             bool isValid = false;
             if (messageObject[1] is Bitmap)
+            {
+                isValid = true;
+            }
+            return isValid;
+        }
+
+        //Helper method for updateMessages
+        private bool checkFileMsg(Object[] messageObject)
+        {
+            bool isValid = false;
+            if (messageObject[1] is string[])
             {
                 isValid = true;
             }
