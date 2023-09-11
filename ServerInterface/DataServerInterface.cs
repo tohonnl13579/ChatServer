@@ -36,16 +36,23 @@ namespace ServerInterface
         [OperationContract]
         void SendPublicMessage(string roomName, string username, string message);
 
-        //SendPublicImgMessage: able to send image data
+        //SendPublicImage: able to send image data
         [OperationContract]
-        void SendPublicImgMessage(string roomName, string username, Bitmap imgData);
+        void SendPublicImage(string roomName, string username, Bitmap imgData);
+
+        //SendPublicTextFile: able to send textFile data
+        [OperationContract]
+        void SendPublicTextFile(string roomName, string username, string[] textFileData);
 
         [OperationContract]
         void SendPrivateMessage(string roomName, string fromUser, string toUser, string message);
 
-        //SendPublicImgMessage: able to send image data
+        //SendPrivateImage: able to send image data
         [OperationContract]
-        void SendPrivateImgMessage(string roomName, string fromUser, string toUser, Bitmap imgData);
+        void SendPrivateImage(string roomName, string fromUser, string toUser, Bitmap imgData);
+        \//SendPrivateTextFIle: able to send textFile data
+        [OperationContract]
+        void SendPrivateTextFile(string roomName, string fromUser, string toUser, string[] textFileData);
 
         [OperationContract]
         List<string> GetMessages(string roomName, string username);

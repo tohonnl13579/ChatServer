@@ -79,7 +79,12 @@ namespace Server
             }
         }
 
-        public void SendPublicImgMessage(string roomName, string username, Bitmap imgData)
+        public void SendPublicImage(string roomName, string username, Bitmap imgData)
+        {
+            //Not implemented yet
+        }
+
+        public void SendPublicTextFile(string roomName, string username, string[] textFileData)
         {
             //Not implemented yet
         }
@@ -95,7 +100,12 @@ namespace Server
             }
         }
 
-        public void SendPrivateImgMessage(string roomName, string fromUser, string toUser, Bitmap imgData)
+        public void SendPrivateImage(string roomName, string fromUser, string toUser, Bitmap imgData)
+        {
+            //Not implemented yet
+        }
+
+        public void SendPrivateTextFile(string roomName, string fromUser, string toUser, string[] textFileData)
         {
             //Not implemented yet
         }

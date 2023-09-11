@@ -91,23 +91,6 @@ namespace ChatServer
             }
         }
 
-        //Overloaded sendMessage: send image data
-        public void sendMessage(string roomName, string fromUser, string toUser, Bitmap imageMsg)
-        {
-            for (int i = 0; i < chatrooms.Count; i++)
-            {
-                if (chatrooms[i].roomName.Equals(roomName))
-                {
-                    Message messageItem = new Message();
-                    messageItem.fromUser = fromUser;
-                    messageItem.toUser = toUser;
-                    messageItem.imageData = imageMsg;
-                    chatrooms[i].messages.Add(messageItem);
-                    break;
-                }
-            }
-        }
-
         public HashSet<string> GetUserListInRoom(string roomName)
         {
             HashSet<string> userList = new HashSet<string>();

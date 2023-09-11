@@ -13,6 +13,7 @@ namespace Database
         public string toUser;
         public string message;
         public Bitmap imageData;
+        public string[] textFileData;
 
         public Message()
         {
@@ -20,6 +21,7 @@ namespace Database
             toUser = null;
             message = null;
             imageData = null;
+            textFileData = null;
         }
     }
 }
