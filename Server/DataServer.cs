@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text;
@@ -78,6 +79,11 @@ namespace Server
             }
         }
 
+        public void SendPublicMessage(string roomName, string username, Bitmap imgData)
+        {
+            //Not implemented yet
+        }
+
         public void SendPrivateMessage(string roomName, string fromUser, string toUser, string message) 
         {
             if (CheckRoomExisted(roomName))
@@ -87,6 +93,11 @@ namespace Server
                     db.SendMessage(roomName, fromUser, toUser, message);
                 }
             }
+        }
+
+        public void SendPrivateMessage(string roomName, string fromUser, string toUser, Bitmap imgData)
+        {
+            //Not implemented yet
         }
 
         public List<string> GetMessages(string roomName, string username)

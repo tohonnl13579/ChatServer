@@ -22,7 +22,7 @@ namespace Server
             Console.ReadLine();
             Console.WriteLine(" Press enter again to close the ChatServer... ");
             Console.ReadLine();
-            Console.WriteLine(" Press enter to close server...");
+            Console.WriteLine(" Press enter one more time to close server...");
             Console.ReadLine();
             host.Close();
         }
