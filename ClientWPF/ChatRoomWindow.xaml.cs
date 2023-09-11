@@ -24,6 +24,8 @@ namespace ClientWPF
         private DataServerInterface foob;
         private ChannelFactory<DataServerInterface> foobFactory;
         private string loggedUser, currChatRoom;
+        private Bitmap loadedImageData;
+        private string loadedTextFileData;
         private int maxConnectAtt;
         public ChatRoomWindow(string user)
         {
@@ -34,6 +36,8 @@ namespace ClientWPF
             TextBox_TextChatBox.Text = "";
             TextBox_PrivateMsgUser.Text = "";
             currChatRoom = null;
+            loadedImageData = null;
+            loadedTextFileData = null;
             ListView_ChatWindow.HorizontalContentAlignment = HorizontalAlignment.Left;
             connectToServer();
             updateRooms();
@@ -73,7 +77,7 @@ namespace ClientWPF
                 if (currChatRoom != null)
                 {
                     foob.LeaveChatRoom(currChatRoom, loggedUser);
-                    currChatRoom = null;
+                    //currChatRoom = null;
                 }
 
                 roomName = TextBox_CreateRoom.Text;
@@ -136,13 +140,14 @@ namespace ClientWPF
                 if(currChatRoom != null)
                 {
                     foob.LeaveChatRoom(currChatRoom, loggedUser);
-                    currChatRoom = null;
+                    //currChatRoom = null;
                     Label_ChatRoom.Content = "Select a room to enter...";
-                    if(item != null)
-                    {
-                        currChatRoom = foob.JoinChatRoom(item.Content.ToString(), loggedUser);
-                        Label_ChatRoom.Content = "Current Room: " + currChatRoom;
-                    }
+                }
+
+                if (item != null)
+                {
+                    currChatRoom = foob.JoinChatRoom(item.Content.ToString(), loggedUser);
+                    Label_ChatRoom.Content = "Current Room: " + currChatRoom;
                 }
                 updateMessages();
                 updateUsers();
@@ -181,6 +186,18 @@ namespace ClientWPF
             try
             {
                 //Needs Implementing
+                //check if there is any file loaded
+                if(loadedImageData != null || loadedTextFileData != null)
+                {
+
+                    //reset to null once sent
+                    loadedImageData = null;
+                    loadedTextFileData = null;
+                }
+                else
+                {
+
+                }
             }
             catch (CommunicationException cE)
             {
@@ -200,6 +217,18 @@ namespace ClientWPF
             try
             {
                 //Needs Implementing
+                //check if there is any file loaded
+                if (loadedImageData != null || loadedTextFileData != null)
+                {
+
+                    //reset to null once sent
+                    loadedImageData = null;
+                    loadedTextFileData = null;
+                }
+                else
+                {
+
+                }
             }
             catch (CommunicationException cE)
             {
