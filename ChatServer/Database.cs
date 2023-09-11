@@ -1,6 +1,7 @@
 ﻿using Database;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -84,6 +85,23 @@ namespace ChatServer
                     messageItem.fromUser = fromUser; 
                     messageItem.toUser = toUser;
                     messageItem.message = message;
+                    chatrooms[i].messages.Add(messageItem);
+                    break;
+                }
+            }
+        }
+
+        //Overloaded sendMessage: send image data
+        public void sendMessage(string roomName, string fromUser, string toUser, Bitmap imageMsg)
+        {
+            for (int i = 0; i < chatrooms.Count; i++)
+            {
+                if (chatrooms[i].roomName.Equals(roomName))
+                {
+                    Message messageItem = new Message();
+                    messageItem.fromUser = fromUser;
+                    messageItem.toUser = toUser;
+                    messageItem.imageData = imageMsg;
                     chatrooms[i].messages.Add(messageItem);
                     break;
                 }
