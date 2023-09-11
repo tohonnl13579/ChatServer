@@ -58,6 +58,7 @@ namespace ClientWPF
             }
             else
             {
+                Warning_Label.Content = "Processing request..";
                 bool logged = foob.AddUser(username);
                 if (logged)
                 {
