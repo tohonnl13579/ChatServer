@@ -31,16 +31,8 @@ namespace TestingLoggedIn
             string URL = "net.tcp://localhost:8100/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();
-
-            NetTcpBinding tcpC = new NetTcpBinding();
-            string URL2 = "net.tcp://localhost:8100/DataService";
-            foobFactory2 = new ChannelFactory<DataServerInterface>(tcpC, URL2);
-            foob2 = foobFactory2.CreateChannel();
             InitializeComponent();
-            foob.updateField();
-            foobFactory.Close();
-            ChatRoom_Label.Content = foob2.getField().ToString();
-            //UpdateRooms();
+            UpdateRooms();
         }
 
         private void RoomList_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
