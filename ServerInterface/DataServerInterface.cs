@@ -54,6 +54,10 @@ namespace ServerInterface
         [OperationContract]
         void SendPrivateTextFile(string roomName, string fromUser, string toUser, string[] textFileData);
 
+        //Usage: only returns mock data for testing purposess
+        [OperationContract]
+        List<object[]> mockData();
+
         [OperationContract]
         List<string> GetMessages(string roomName, string username);
 

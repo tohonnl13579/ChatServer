@@ -110,6 +110,58 @@ namespace Server
             //Not implemented yet
         }
 
+        //This is only for testing purposes, and may serve as a reference for changes to be made in the server
+        public List<object[]> mockData()
+        {
+            List<object[]> objectList = new List<object[]>();
+
+            object[] data1 = new object[2];
+            data1[0] = "Ariel";
+            data1[1] = "Hello this is a string messageData";
+
+            object[] data2 = new object[2];
+            data2[0] = "Ariel -> LeeTohOhn";
+            data2[1] = "This is a private string messageData to user: LeeTohOhn";
+
+            string[] mockTextFileData = new string[5];
+            mockTextFileData[0] = "This";
+            mockTextFileData[1] = "is an example";
+            mockTextFileData[2] = "textFile data";
+            mockTextFileData[3] = "for testing purposes";
+            mockTextFileData[4] = "Thanks, Ariel";
+            object[] data3 = new object[2];
+            data3[0] = "Ariel";
+            data3[1] = mockTextFileData;
+
+            string[] mockTextFileData2= new string[5];
+            mockTextFileData2[0] = "This";
+            mockTextFileData2[1] = "is an example";
+            mockTextFileData2[2] = "textFile data";
+            mockTextFileData2[3] = "for testing purposes";
+            mockTextFileData2[4] = "Thanks, Ariel";
+            object[] data4 = new object[2];
+            data4[0] = "Ariel -> LeeTohOhn";
+            data4[1] = mockTextFileData;
+
+            /*
+            object[] data5 = new object[2];
+            Bitmap bitmap = new Bitmap(500, 500);
+            Graphics graph = Graphics.FromImage(bitmap);
+            Rectangle ImageSize = new Rectangle(0, 0, 500, 500);
+            graph.FillRectangle(Brushes.Gray, ImageSize);
+            data5[0] = "Ariel";
+            data5[1] = bitmap;
+            */
+
+            objectList.Add(data1);
+            objectList.Add(data2);
+            objectList.Add(data3);
+            objectList.Add(data4);
+            //objectList.Add(data5);
+
+            return objectList;
+        }
+
         // FOR REFERENCE FOR ClientWPF
         // Takes a List of type Object[] in which element is size 2
         // Object[2] format:
