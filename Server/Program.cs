@@ -15,6 +15,10 @@ namespace Server
             Console.WriteLine("### Simple Chat Server ###");
             ServiceHost host;
             NetTcpBinding tcp = new NetTcpBinding();
+            tcp.OpenTimeout = new TimeSpan(0, 0, 5);
+            tcp.CloseTimeout = new TimeSpan(0, 0, 5);
+            tcp.ReceiveTimeout = new TimeSpan(0, 0, 5);
+            tcp.SendTimeout = new TimeSpan(0, 0, 5);
             host = new ServiceHost(typeof(DataServer));
             host.AddServiceEndpoint(typeof(DataServerInterface), tcp, "net.tcp://0.0.0.0:8100/DataService");
             host.Open();
