@@ -125,6 +125,7 @@ namespace Server
             data2[0] = "Ariel -> LeeTohOhn";
             data2[1] = "This is a private string messageData to user: LeeTohOhn";
 
+            
             string[] mockTextFileData = new string[5];
             mockTextFileData[0] = "This";
             mockTextFileData[1] = "is an example";
@@ -134,7 +135,9 @@ namespace Server
             object[] data3 = new object[2];
             data3[0] = "Ariel";
             data3[1] = mockTextFileData;
+            
 
+            /*
             string[] mockTextFileData2= new string[5];
             mockTextFileData2[0] = "This";
             mockTextFileData2[1] = "is an example";
@@ -144,6 +147,7 @@ namespace Server
             object[] data4 = new object[2];
             data4[0] = "Ariel -> LeeTohOhn";
             data4[1] = mockTextFileData;
+            */
 
             /*
             object[] data5 = new object[2];
@@ -158,7 +162,7 @@ namespace Server
             objectList.Add(data1);
             objectList.Add(data2);
             objectList.Add(data3);
-            objectList.Add(data4);
+            //objectList.Add(data4);
             //objectList.Add(data5);
 
             return objectList;

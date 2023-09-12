@@ -48,6 +48,7 @@ namespace ClientWPF
             selectedFilePath = null;
             textFileDataHolder = null;
             ListView_ChatWindow.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
+            Console.WriteLine("Hello World");
             connectToServer();
             updateRooms();
         }
@@ -597,6 +598,7 @@ namespace ClientWPF
             catch (CommunicationException cE)
             {
                 ChatRoomWarning_Label.Content = "Connection Lost!: " + cE.Message;
+                System.Windows.MessageBox.Show(cE.StackTrace);
                 connectToServer();
             }
             catch(InvalidCastException iCE)
@@ -634,7 +636,7 @@ namespace ClientWPF
         private bool checkStrMsg(Object[] messageObject)
         {
             bool isValid = false;
-            if (messageObject[1] is List<string>)
+            if (messageObject[1] is string)
             {
                 isValid = true;
             }

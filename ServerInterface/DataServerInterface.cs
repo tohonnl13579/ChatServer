@@ -66,6 +66,5 @@ namespace ServerInterface
 
         [OperationContract]
         HashSet<string> GetUserOnline(string roomName);
-        
     }
 }
