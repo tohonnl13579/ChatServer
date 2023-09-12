@@ -123,7 +123,7 @@ namespace Server
             //Not implemented yet
         }
 
-        //This is only for testing purposes, and may serve as a reference for changes to be made in the server
+        //TESTING
         public void mockData()
         {
             //List<object[]> objectList = new List<object[]>();
@@ -185,15 +185,11 @@ namespace Server
         {
             return messageData.Count;
         }
+        //TESTING
 
         // FOR REFERENCE FOR ClientWPF
-        // Takes a List of type Object[] in which element is size 2
-        // Object[2] format:
-        // [string identifier , Bitmap imgData/string messageData/string[] textFileData]
-        //
-        // string identifier FORMAT:
-        // for public msg: <username>: 
-        // for private msg: <fromUser> -> <toUser>:
+        // Just send a Message objects to the client, After pain and suffering, this is the solution 
+        // Refer to above Example Within //TESTING markers
 
         public List<string> GetMessages(string roomName, string username)
         {

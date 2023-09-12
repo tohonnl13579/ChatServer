@@ -470,6 +470,7 @@ namespace ClientWPF
             }
         }
 
+        //This function will convert Message data objects into a list of object[]
         private List<object[]> getMsgData()
         {
             List<object[]> objList = new List<object[]>();

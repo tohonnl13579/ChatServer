@@ -21,8 +21,8 @@ namespace Server
             tcp.ReceiveTimeout = new TimeSpan(0, 0, 10);
             tcp.SendTimeout = new TimeSpan(0, 0, 30);
             tcp.MaxBufferPoolSize = 10000;
-            tcp.MaxReceivedMessageSize = 10000;
-            tcp.MaxBufferSize = 10000;
+            tcp.MaxReceivedMessageSize = 500000;
+            tcp.MaxBufferSize = 500000;
             tcp.ReaderQuotas.MaxArrayLength = 10000;
             tcp.ReaderQuotas.MaxArrayLength = 10000;
             tcp.ReaderQuotas.MaxDepth = 10;
