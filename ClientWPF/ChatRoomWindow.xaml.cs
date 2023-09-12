@@ -48,7 +48,9 @@ namespace ClientWPF
             selectedFilePath = null;
             textFileDataHolder = null;
             ListView_ChatWindow.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
+            Console.WriteLine("Hello World");
             connectToServer();
+            foob.mockData(); //TESTING PURPOSES
             updateRooms();
         }
 
@@ -56,6 +58,18 @@ namespace ClientWPF
         {
             bool connect = true;
             NetTcpBinding tcpB = new NetTcpBinding();
+            tcpB.CloseTimeout = new TimeSpan(0,0,10);
+            tcpB.CloseTimeout = new TimeSpan(0, 0, 5);
+            tcpB.ReceiveTimeout = new TimeSpan(0, 0, 10);
+            tcpB.SendTimeout = new TimeSpan(0, 0, 30);
+            tcpB.MaxBufferPoolSize = 10000;
+            tcpB.MaxReceivedMessageSize = 500000;
+            tcpB.MaxBufferSize = 500000;
+            tcpB.ReaderQuotas.MaxArrayLength = 10000;
+            tcpB.ReaderQuotas.MaxDepth = 10;
+            tcpB.ReaderQuotas.MaxBytesPerRead = 10000;
+            tcpB.ReaderQuotas.MaxStringContentLength = 10000;
+
             string URL = "net.tcp://localhost:8100/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();
@@ -454,7 +468,44 @@ namespace ClientWPF
             {
                 ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
             }
+        }
 
+        //This function will convert Message data objects into a list of object[]
+        private List<object[]> getMsgData()
+        {
+            List<object[]> objList = new List<object[]>();
+            int count = foob.getEntryCount();
+            for(int i = 0; i < count; i++)
+            {
+                object[] obj = new object[2];
+                Database.Message msg = foob.getMessageData(i);
+                if(msg.toUser == null)
+                {
+                    String identifier = msg.fromUser;
+                    obj[0] = identifier;
+                }
+                else
+                {
+                    String identifier = msg.fromUser + " -> " + msg.toUser;
+                    obj[0] = identifier;
+                }
+
+                if(msg.message != null)
+                {
+                    obj[1] = msg.message;
+                }
+                else if(msg.imageData != null)
+                {
+                    obj[1] = msg.imageData;
+                }
+                else if(msg.textFileData != null)
+                {
+                    obj[1] = msg.textFileData;
+                }
+                objList.Add(obj);
+            }
+            
+            return objList;
         }
 
         // Takes a List of type Object[] in which element is size 2
@@ -464,111 +515,131 @@ namespace ClientWPF
         // string identifier FORMAT:
         // for public msg: <username>: 
         // for private msg: <fromUser> -> <toUser>:
+
         private void updateMessages()
         {
             //ChatRoomWarning_Label.Content = "";
             try
             {
                 //Change to foob.getMessages() once the server side updated to return object[] list
-                List<object[]> messageData = new List<object[]>();
+                //List<object[]> messageData = new List<object[]>();
+                List<object[]> messageData = null; //For Testing Purposes
+                messageData = getMsgData();
                 textFileDataHolder = new List<string[]>();
-                int buttonIDCounter = 0;
+                int buttonIDCounter = 1;
 
                 ListView_ChatWindow.Items.Clear();
-                if(currChatRoom != null)
+                if(messageData != null)
                 {
-                    //COMMENT: Feels like coding JavaFx ngl...
-                    for(int i = 0; i < messageData.Count; i++)
+                    if (currChatRoom != null)
                     {
-                        object[] data = messageData[i];
-                        System.Windows.Controls.ListViewItem item = new System.Windows.Controls.ListViewItem();
-                        StackPanel msgContainer = new StackPanel();
-
-                        msgContainer.Orientation = System.Windows.Controls.Orientation.Vertical;
-
-                        if (checkStrMsg(data))
+                        //COMMENT: Feels like coding JavaFx ngl...
+                        for (int i = 0; i < messageData.Count; i++)
                         {
-                            string identifier = data[0].ToString();
-                            string msg = data[1].ToString();
+                            object[] data = messageData[i];
+                            System.Windows.Controls.ListViewItem item = new System.Windows.Controls.ListViewItem();
+                            StackPanel msgContainer = new StackPanel();
 
-                            TextBlock identifierBlock = new TextBlock();
-                            identifierBlock.Text = identifier;
-                            identifierBlock.FontWeight = FontWeights.Bold;
+                            msgContainer.Orientation = System.Windows.Controls.Orientation.Vertical;
 
-                            TextBlock msgBlock = new TextBlock();
-                            msgBlock.Text = msg;
-                            msgBlock.FontSize = msgBlock.FontSize - 1;
+                            if (checkStrMsg(data))
+                            {
+                                string identifier = data[0].ToString();
+                                string msg = data[1].ToString();
 
-                            msgContainer.Children.Add(identifierBlock);
-                            msgContainer.Children.Add(msgBlock);
+                                TextBlock identifierBlock = new TextBlock();
+                                identifierBlock.Text = identifier;
+                                identifierBlock.FontWeight = FontWeights.Bold;
+
+                                TextBlock msgBlock = new TextBlock();
+                                msgBlock.Text = msg;
+                                msgBlock.FontSize = msgBlock.FontSize - 1;
+
+                                msgContainer.Children.Add(identifierBlock);
+                                msgContainer.Children.Add(msgBlock);
+                            }
+                            else if (checkImgMsg(data))
+                            {
+                                string identifier = data[0].ToString();
+                                BitmapImage img = convertBitmapToImg((Bitmap)data[1]);
+
+                                TextBlock identifierBlock = new TextBlock();
+                                identifierBlock.Text = identifier;
+                                identifierBlock.FontWeight = FontWeights.Bold;
+
+                                System.Windows.Controls.Image image = new System.Windows.Controls.Image();
+                                image.Source = img;
+                                image.Stretch = Stretch.Uniform;
+                                image.MaxHeight = 100;
+
+                                msgContainer.Children.Add(identifierBlock);
+                                msgContainer.Children.Add(image);
+                            }
+                            else if (checkFileMsg(data))
+                            {
+                                string identifier = data[0].ToString();
+                                string[] textFileData = (string[])data[1];
+
+                                TextBlock identifierBlock = new TextBlock();
+                                identifierBlock.Text = identifier;
+                                identifierBlock.FontWeight = FontWeights.Bold;
+
+                                System.Windows.Controls.Button Button_linkToFile = new System.Windows.Controls.Button();
+                                Button_linkToFile.Height = 60;
+                                Button_linkToFile.Width = 100;
+                                Button_linkToFile.Content = "Link to File";
+                                Button_linkToFile.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                                Button_linkToFile.FontWeight = FontWeights.Bold;
+                                String stringID = "";
+                                for(int x = 0; x < buttonIDCounter; x++)
+                                {
+                                    stringID += "c";
+                                }
+                                Button_linkToFile.Name = stringID;
+                                buttonIDCounter++;
+                                textFileDataHolder.Add(textFileData);
+                                Button_linkToFile.Click += new RoutedEventHandler(linkToFileButton_Click);
+
+                                msgContainer.Children.Add(identifierBlock);
+                                msgContainer.Children.Add(Button_linkToFile);
+                            }
+                            else
+                            {
+                                //Invalid object given
+                                ChatRoomWarning_Label.Content = "Invalid data format recieved";
+                                string identifier = data[0].ToString();
+                                string error = "INVALID DATA FORMAT: Index " + i;
+
+                                TextBlock identifierBlock = new TextBlock();
+                                identifierBlock.Text = identifier;
+                                identifierBlock.FontWeight = FontWeights.Bold;
+
+                                TextBlock errorBlock = new TextBlock();
+                                errorBlock.Text = error;
+                                errorBlock.FontWeight = FontWeights.Bold;
+                                errorBlock.Foreground = System.Windows.Media.Brushes.Crimson;
+
+                                msgContainer.Children.Add(identifierBlock);
+                                msgContainer.Children.Add(errorBlock);
+                            }
+                            item.Content = msgContainer;
+                            ListView_ChatWindow.Items.Add(item);
                         }
-                        else if (checkImgMsg(data))
-                        {
-                            string identifier = data[0].ToString();
-                            BitmapImage img = convertBitmapToImg((Bitmap)data[1]);
-
-                            TextBlock identifierBlock = new TextBlock();
-                            identifierBlock.Text = identifier;
-                            identifierBlock.FontWeight= FontWeights.Bold;
-
-                            System.Windows.Controls.Image image = new System.Windows.Controls.Image();
-                            image.Source = img;
-                            image.Stretch = Stretch.Uniform;
-                            image.MaxHeight = 100;
-
-                            msgContainer.Children.Add(identifierBlock);
-                            msgContainer.Children.Add(image);
-                        }
-                        else if (checkFileMsg(data))
-                        {
-                            string identifier = data[0].ToString();
-                            string[] textFileData = (string[])data[1];
-
-                            TextBlock identifierBlock = new TextBlock();
-                            identifierBlock.Text = identifier;
-                            identifierBlock.FontWeight = FontWeights.Bold;
-
-                            System.Windows.Controls.Button Button_linkToFile = new System.Windows.Controls.Button();
-                            Button_linkToFile.Height = 60;
-                            Button_linkToFile.Width = 100;
-                            Button_linkToFile.Content = "Link to File";
-                            Button_linkToFile.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                            Button_linkToFile.FontWeight = FontWeights.Bold;
-                            Button_linkToFile.Name = buttonIDCounter.ToString();
-                            buttonIDCounter++;
-                            textFileDataHolder.Add(textFileData);
-                            Button_linkToFile.Click += new RoutedEventHandler(linkToFileButton_Click);
-
-                            msgContainer.Children.Add(identifierBlock);
-                            msgContainer.Children.Add(Button_linkToFile);
-                        }
-                        else
-                        {
-                            //Invalid object given
-                            ChatRoomWarning_Label.Content = "Invalid data format recieved";
-                            string identifier = data[0].ToString();
-                            string error = "INVALID DATA FORMAT: Index " + i;
-
-                            TextBlock identifierBlock = new TextBlock();
-                            identifierBlock.Text = identifier;
-                            identifierBlock.FontWeight = FontWeights.Bold;
-
-                            TextBlock errorBlock = new TextBlock();
-                            errorBlock.Text = error;
-                            errorBlock.FontWeight = FontWeights.Bold;
-                            errorBlock.Foreground = System.Windows.Media.Brushes.Crimson;
-
-                            msgContainer.Children.Add(identifierBlock);
-                            msgContainer.Children.Add(errorBlock);
-                        }
-                        item.Content = msgContainer;
-                        ListView_ChatWindow.Items.Add(item);
                     }
+                    else
+                    {
+                        ChatRoomWarning_Label.Content = "currRoom is NULL";
+                    }
+                }
+                else
+                {
+                    ChatRoomWarning_Label.Content = "messageData is NULL";
                 }
             }
             catch (CommunicationException cE)
             {
                 ChatRoomWarning_Label.Content = "Connection Lost!: " + cE.Message;
+                System.Windows.MessageBox.Show(cE.StackTrace);
                 connectToServer();
             }
             catch(InvalidCastException iCE)
@@ -587,9 +658,9 @@ namespace ClientWPF
             System.Windows.Controls.Button buttonAccess = (System.Windows.Controls.Button)sender;
             if(buttonAccess != null)
             {
-                int buttonID = Convert.ToInt32(buttonAccess.Name);
+                int buttonID = buttonAccess.Name.Length;
                 /* UNTIL FILEVIEWER IS CREATED
-                FileViewer fileViewerWindow = new FileViewer(textFileDataHolder[buttonID]);
+                FileViewer fileViewerWindow = new FileViewer(textFileDataHolder[buttonID-1]);
                 if(fileViewerWindow != null)
                 {
                     fileViewerWindow.Show();
@@ -606,7 +677,7 @@ namespace ClientWPF
         private bool checkStrMsg(Object[] messageObject)
         {
             bool isValid = false;
-            if (messageObject[1] is List<string>)
+            if (messageObject[1] is string)
             {
                 isValid = true;
             }

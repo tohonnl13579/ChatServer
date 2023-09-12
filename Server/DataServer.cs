@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using ChatServer;
@@ -11,9 +12,21 @@ using ServerInterface;
 
 namespace Server
 {
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
     internal class DataServer : DataServerInterface
     {
         private static ChatServer.Database db = new ChatServer.Database();
+
+        //List<object[]> objList = new List<object[]>();
+        List<Message> messageData = new List<Message>();
+
+        /*
+        public DataServer()
+        {
+            mockData();
+            Console.WriteLine("Leeeeerrrooooooyyyy Jeenkinnns");
+        }
+        */
 
         public int GetNumEntries()
         {
@@ -89,7 +102,7 @@ namespace Server
             //Not implemented yet
         }
 
-        public void SendPrivateMessage(string roomName, string fromUser, string toUser, string message) 
+        public void SendPrivateMessage(string roomName, string fromUser, string toUser, string message)
         {
             if (CheckRoomExisted(roomName))
             {
@@ -110,14 +123,73 @@ namespace Server
             //Not implemented yet
         }
 
+        //TESTING
+        public void mockData()
+        {
+            //List<object[]> objectList = new List<object[]>();
+            //data = new List<object[]>();
+
+            Message data1 = new Message();
+            data1.fromUser = "Ariel";
+            data1.message = "Hello this is a string messageData";
+
+            Message data2 = new Message();
+            data2.fromUser = "Ariel";
+            data2.toUser = "Lee Toh Ohn";
+            data2.message = "This is a private string messageData to user: LeeTohOhn";
+
+
+            string[] mockTextFileData = new string[5];
+            mockTextFileData[0] = "This";
+            mockTextFileData[1] = "is an example";
+            mockTextFileData[2] = "textFile data";
+            mockTextFileData[3] = "for testing purposes";
+            mockTextFileData[4] = "Thanks, Ariel";
+            Message data3 = new Message();
+            data3.fromUser = "Ariel";
+            data3.textFileData = mockTextFileData;
+
+
+            string[] mockTextFileData2= new string[5];
+            mockTextFileData2[0] = "This";
+            mockTextFileData2[1] = "is an example";
+            mockTextFileData2[2] = "textFile data";
+            mockTextFileData2[3] = "for testing purposes";
+            mockTextFileData2[4] = "Thanks, Ariel";
+            Message data4 = new Message();
+            data4.fromUser = "Ariel";
+            data4.toUser = "Ramprakash";
+            data4.textFileData = mockTextFileData;
+
+            
+            Message data5 = new Message();
+            Bitmap bitmap = new Bitmap(500, 500);
+            Graphics graph = Graphics.FromImage(bitmap);
+            Rectangle ImageSize = new Rectangle(0, 0, 500, 500);
+            graph.FillRectangle(Brushes.Gray, ImageSize);
+            data5.fromUser = "Ariel";
+            data5.imageData = bitmap;
+
+            messageData.Add(data1);
+            messageData.Add(data2);
+            messageData.Add(data3);
+            messageData.Add(data4);
+            messageData.Add(data5);
+        }
+
+        public Message getMessageData(int index)
+        {
+            return messageData[index];
+        }
+        public int getEntryCount()
+        {
+            return messageData.Count;
+        }
+        //TESTING
+
         // FOR REFERENCE FOR ClientWPF
-        // Takes a List of type Object[] in which element is size 2
-        // Object[2] format:
-        // [string identifier , Bitmap imgData/string messageData/string[] textFileData]
-        //
-        // string identifier FORMAT:
-        // for public msg: <username>: 
-        // for private msg: <fromUser> -> <toUser>:
+        // Just send a Message objects to the client, After pain and suffering, this is the solution 
+        // Refer to above Example Within //TESTING markers
 
         public List<string> GetMessages(string roomName, string username)
         {
