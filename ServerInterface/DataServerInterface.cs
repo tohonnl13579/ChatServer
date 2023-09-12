@@ -62,11 +62,11 @@ namespace ServerInterface
 
         //TESTING
         [OperationContract]
-        Message getMessageData(int index);
+        List<Message> getMessageListData();
 
         //TESTING
         [OperationContract]
-        int getEntryCount();
+        int getMessageEntryCount();
 
         [OperationContract]
         List<string> GetMessages(string roomName, string username);

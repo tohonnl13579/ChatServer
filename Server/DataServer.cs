@@ -18,15 +18,7 @@ namespace Server
         private static ChatServer.Database db = new ChatServer.Database();
 
         //List<object[]> objList = new List<object[]>();
-        List<Message> messageData = new List<Message>();
-
-        /*
-        public DataServer()
-        {
-            mockData();
-            Console.WriteLine("Leeeeerrrooooooyyyy Jeenkinnns");
-        }
-        */
+        List<Message> messageData = new List<Message>(); // TESTING
 
         public int GetNumEntries()
         {
@@ -124,7 +116,7 @@ namespace Server
         }
 
         //TESTING
-        public void mockData()
+        public void mockData() //MOCK DATA
         {
             //List<object[]> objectList = new List<object[]>();
             //data = new List<object[]>();
@@ -177,18 +169,19 @@ namespace Server
             messageData.Add(data5);
         }
 
-        public Message getMessageData(int index)
+        public List<Message> getMessageListData()
         {
-            return messageData[index];
+            return messageData;
         }
-        public int getEntryCount()
+
+        public int getMessageEntryCount()
         {
             return messageData.Count;
         }
         //TESTING
 
         // FOR REFERENCE FOR ClientWPF
-        // Just send a Message objects to the client, After pain and suffering, this is the solution 
+        // Just send a List<Message> to the client, After pain and suffering, this is the solution 
         // Refer to above Example Within //TESTING markers
 
         public List<string> GetMessages(string roomName, string username)

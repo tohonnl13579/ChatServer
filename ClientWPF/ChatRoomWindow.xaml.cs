@@ -474,11 +474,12 @@ namespace ClientWPF
         private List<object[]> getMsgData()
         {
             List<object[]> objList = new List<object[]>();
-            int count = foob.getEntryCount();
+            int count = foob.getMessageEntryCount();
+            List<Database.Message> msgList = foob.getMessageListData();
             for(int i = 0; i < count; i++)
             {
                 object[] obj = new object[2];
-                Database.Message msg = foob.getMessageData(i);
+                Database.Message msg = msgList[i];
                 if(msg.toUser == null)
                 {
                     String identifier = msg.fromUser;
