@@ -17,13 +17,16 @@ namespace Server
     {
         private static ChatServer.Database db = new ChatServer.Database();
 
-        List<object[]> objList = new List<object[]>();
+        //List<object[]> objList = new List<object[]>();
+        List<Message> messageData = new List<Message>();
 
+        /*
         public DataServer()
         {
             mockData();
             Console.WriteLine("Leeeeerrrooooooyyyy Jeenkinnns");
         }
+        */
 
         public int GetNumEntries()
         {
@@ -126,13 +129,14 @@ namespace Server
             //List<object[]> objectList = new List<object[]>();
             //data = new List<object[]>();
 
-            object[] data1 = new object[2];
-            data1[0] = "Ariel";
-            data1[1] = "Hello this is a string messageData";
+            Message data1 = new Message();
+            data1.fromUser = "Ariel";
+            data1.message = "Hello this is a string messageData";
 
-            object[] data2 = new object[2];
-            data2[0] = "Ariel -> LeeTohOhn";
-            data2[1] = "This is a private string messageData to user: LeeTohOhn";
+            Message data2 = new Message();
+            data2.fromUser = "Ariel";
+            data2.toUser = "Lee Toh Ohn";
+            data2.message = "This is a private string messageData to user: LeeTohOhn";
 
 
             string[] mockTextFileData = new string[5];
@@ -141,47 +145,45 @@ namespace Server
             mockTextFileData[2] = "textFile data";
             mockTextFileData[3] = "for testing purposes";
             mockTextFileData[4] = "Thanks, Ariel";
-            object[] data3 = new object[2];
-            data3[0] = "Ariel";
-            data3[1] = mockTextFileData;
+            Message data3 = new Message();
+            data3.fromUser = "Ariel";
+            data3.textFileData = mockTextFileData;
 
 
-            /*
             string[] mockTextFileData2= new string[5];
             mockTextFileData2[0] = "This";
             mockTextFileData2[1] = "is an example";
             mockTextFileData2[2] = "textFile data";
             mockTextFileData2[3] = "for testing purposes";
             mockTextFileData2[4] = "Thanks, Ariel";
-            object[] data4 = new object[2];
-            data4[0] = "Ariel -> LeeTohOhn";
-            data4[1] = mockTextFileData;
-            */
+            Message data4 = new Message();
+            data4.fromUser = "Ariel";
+            data4.toUser = "Ramprakash";
+            data4.textFileData = mockTextFileData;
 
-            /*
-            object[] data5 = new object[2];
+            
+            Message data5 = new Message();
             Bitmap bitmap = new Bitmap(500, 500);
             Graphics graph = Graphics.FromImage(bitmap);
             Rectangle ImageSize = new Rectangle(0, 0, 500, 500);
             graph.FillRectangle(Brushes.Gray, ImageSize);
-            data5[0] = "Ariel";
-            data5[1] = bitmap;
-            */
+            data5.fromUser = "Ariel";
+            data5.imageData = bitmap;
 
-            objList.Add(data1);
-            objList.Add(data2);
-            objList.Add(data3);
-            //objectList.Add(data4);
-            //objectList.Add(data5);
+            messageData.Add(data1);
+            messageData.Add(data2);
+            messageData.Add(data3);
+            messageData.Add(data4);
+            messageData.Add(data5);
         }
 
-        public Message getMessageData()
+        public Message getMessageData(int index)
         {
-            return objList;
+            return messageData[index];
         }
         public int getEntryCount()
         {
-            return objList.Count;
+            return messageData.Count;
         }
 
         // FOR REFERENCE FOR ClientWPF

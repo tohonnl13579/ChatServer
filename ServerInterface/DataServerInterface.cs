@@ -62,7 +62,7 @@ namespace ServerInterface
 
         //TESTING
         [OperationContract]
-        Message getMessageData();
+        Message getMessageData(int index);
 
         //TESTING
         [OperationContract]

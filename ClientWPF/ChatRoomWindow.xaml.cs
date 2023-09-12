@@ -62,13 +62,13 @@ namespace ClientWPF
             tcpB.CloseTimeout = new TimeSpan(0, 0, 5);
             tcpB.ReceiveTimeout = new TimeSpan(0, 0, 10);
             tcpB.SendTimeout = new TimeSpan(0, 0, 30);
-            tcpB.MaxBufferPoolSize = 1000;
-            tcpB.MaxReceivedMessageSize = 1000;
-            tcpB.MaxBufferSize = 1000;
-            tcpB.ReaderQuotas.MaxArrayLength = 1000;
+            tcpB.MaxBufferPoolSize = 10000;
+            tcpB.MaxReceivedMessageSize = 500000;
+            tcpB.MaxBufferSize = 500000;
+            tcpB.ReaderQuotas.MaxArrayLength = 10000;
             tcpB.ReaderQuotas.MaxDepth = 10;
-            tcpB.ReaderQuotas.MaxBytesPerRead = 1000;
-            tcpB.ReaderQuotas.MaxStringContentLength = 1000;
+            tcpB.ReaderQuotas.MaxBytesPerRead = 10000;
+            tcpB.ReaderQuotas.MaxStringContentLength = 10000;
 
             string URL = "net.tcp://localhost:8100/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
@@ -473,7 +473,36 @@ namespace ClientWPF
         private List<object[]> getMsgData()
         {
             List<object[]> objList = new List<object[]>();
-            object obj = foob.getMessageData();
+            int count = foob.getEntryCount();
+            for(int i = 0; i < count; i++)
+            {
+                object[] obj = new object[2];
+                Database.Message msg = foob.getMessageData(i);
+                if(msg.toUser == null)
+                {
+                    String identifier = msg.fromUser;
+                    obj[0] = identifier;
+                }
+                else
+                {
+                    String identifier = msg.fromUser + " -> " + msg.toUser;
+                    obj[0] = identifier;
+                }
+
+                if(msg.message != null)
+                {
+                    obj[1] = msg.message;
+                }
+                else if(msg.imageData != null)
+                {
+                    obj[1] = msg.imageData;
+                }
+                else if(msg.textFileData != null)
+                {
+                    obj[1] = msg.textFileData;
+                }
+                objList.Add(obj);
+            }
             
             return objList;
         }
@@ -496,7 +525,7 @@ namespace ClientWPF
                 List<object[]> messageData = null; //For Testing Purposes
                 messageData = getMsgData();
                 textFileDataHolder = new List<string[]>();
-                int buttonIDCounter = 0;
+                int buttonIDCounter = 1;
 
                 ListView_ChatWindow.Items.Clear();
                 if(messageData != null)
@@ -560,7 +589,12 @@ namespace ClientWPF
                                 Button_linkToFile.Content = "Link to File";
                                 Button_linkToFile.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
                                 Button_linkToFile.FontWeight = FontWeights.Bold;
-                                Button_linkToFile.Name = buttonIDCounter.ToString();
+                                String stringID = "";
+                                for(int x = 0; x < buttonIDCounter; x++)
+                                {
+                                    stringID += "c";
+                                }
+                                Button_linkToFile.Name = stringID;
                                 buttonIDCounter++;
                                 textFileDataHolder.Add(textFileData);
                                 Button_linkToFile.Click += new RoutedEventHandler(linkToFileButton_Click);
@@ -623,9 +657,9 @@ namespace ClientWPF
             System.Windows.Controls.Button buttonAccess = (System.Windows.Controls.Button)sender;
             if(buttonAccess != null)
             {
-                int buttonID = Convert.ToInt32(buttonAccess.Name);
+                int buttonID = buttonAccess.Name.Length;
                 /* UNTIL FILEVIEWER IS CREATED
-                FileViewer fileViewerWindow = new FileViewer(textFileDataHolder[buttonID]);
+                FileViewer fileViewerWindow = new FileViewer(textFileDataHolder[buttonID-1]);
                 if(fileViewerWindow != null)
                 {
                     fileViewerWindow.Show();
