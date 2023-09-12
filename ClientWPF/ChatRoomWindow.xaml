@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="ChatRoomWindow" SizeToContent="WidthAndHeight">
     <Grid Background="#FFB7B3B3">
-        <Label x:Name="ChatRoomWarning_Label" Content="Label" HorizontalAlignment="Left" Margin="179,403,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="DemiBold" Foreground="DarkRed" RenderTransformOrigin="0.725,0.554" Width="354"/>
+        <Label x:Name="ChatRoomWarning_Label" Content="Label" HorizontalAlignment="Left" Margin="179,403,0,0" VerticalAlignment="Top" FontSize="11" FontWeight="DemiBold" Foreground="DarkRed" RenderTransformOrigin="0.725,0.554" Width="354"/>
         <ListBox x:Name="ListBox_RoomList" d:ItemsSource="{d:SampleData ItemCount=5}" Height="339" Width="160" SelectionChanged="RoomList_Select" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,31,0,0">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
