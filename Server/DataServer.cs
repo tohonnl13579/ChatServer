@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using ChatServer;
@@ -11,6 +12,7 @@ using ServerInterface;
 
 namespace Server
 {
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
     internal class DataServer : DataServerInterface
     {
         private static ChatServer.Database db = new ChatServer.Database();

@@ -17,8 +17,8 @@ namespace Server
             NetTcpBinding tcp = new NetTcpBinding();
             tcp.OpenTimeout = new TimeSpan(0, 0, 5);
             tcp.CloseTimeout = new TimeSpan(0, 0, 5);
-            tcp.ReceiveTimeout = new TimeSpan(0, 0, 5);
-            tcp.SendTimeout = new TimeSpan(0, 0, 5);
+            tcp.ReceiveTimeout = new TimeSpan(0, 0, 10);
+            tcp.SendTimeout = new TimeSpan(0, 0, 30);
             host = new ServiceHost(typeof(DataServer));
             host.AddServiceEndpoint(typeof(DataServerInterface), tcp, "net.tcp://0.0.0.0:8100/DataService");
             host.Open();
