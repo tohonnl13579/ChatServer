@@ -17,6 +17,14 @@ namespace Server
     {
         private static ChatServer.Database db = new ChatServer.Database();
 
+        List<object[]> objList = new List<object[]>();
+
+        public DataServer()
+        {
+            mockData();
+            Console.WriteLine("Leeeeerrrooooooyyyy Jeenkinnns");
+        }
+
         public int GetNumEntries()
         {
             return db.GetTotalUsers();
@@ -91,7 +99,7 @@ namespace Server
             //Not implemented yet
         }
 
-        public void SendPrivateMessage(string roomName, string fromUser, string toUser, string message) 
+        public void SendPrivateMessage(string roomName, string fromUser, string toUser, string message)
         {
             if (CheckRoomExisted(roomName))
             {
@@ -113,9 +121,10 @@ namespace Server
         }
 
         //This is only for testing purposes, and may serve as a reference for changes to be made in the server
-        public List<object[]> mockData()
+        public void mockData()
         {
-            List<object[]> objectList = new List<object[]>();
+            //List<object[]> objectList = new List<object[]>();
+            //data = new List<object[]>();
 
             object[] data1 = new object[2];
             data1[0] = "Ariel";
@@ -125,7 +134,7 @@ namespace Server
             data2[0] = "Ariel -> LeeTohOhn";
             data2[1] = "This is a private string messageData to user: LeeTohOhn";
 
-            
+
             string[] mockTextFileData = new string[5];
             mockTextFileData[0] = "This";
             mockTextFileData[1] = "is an example";
@@ -135,7 +144,7 @@ namespace Server
             object[] data3 = new object[2];
             data3[0] = "Ariel";
             data3[1] = mockTextFileData;
-            
+
 
             /*
             string[] mockTextFileData2= new string[5];
@@ -159,13 +168,20 @@ namespace Server
             data5[1] = bitmap;
             */
 
-            objectList.Add(data1);
-            objectList.Add(data2);
-            objectList.Add(data3);
+            objList.Add(data1);
+            objList.Add(data2);
+            objList.Add(data3);
             //objectList.Add(data4);
             //objectList.Add(data5);
+        }
 
-            return objectList;
+        public Message getMessageData()
+        {
+            return objList;
+        }
+        public int getEntryCount()
+        {
+            return objList.Count;
         }
 
         // FOR REFERENCE FOR ClientWPF

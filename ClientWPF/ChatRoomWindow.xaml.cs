@@ -50,6 +50,7 @@ namespace ClientWPF
             ListView_ChatWindow.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
             Console.WriteLine("Hello World");
             connectToServer();
+            foob.mockData(); //TESTING PURPOSES
             updateRooms();
         }
 
@@ -57,6 +58,18 @@ namespace ClientWPF
         {
             bool connect = true;
             NetTcpBinding tcpB = new NetTcpBinding();
+            tcpB.CloseTimeout = new TimeSpan(0,0,10);
+            tcpB.CloseTimeout = new TimeSpan(0, 0, 5);
+            tcpB.ReceiveTimeout = new TimeSpan(0, 0, 10);
+            tcpB.SendTimeout = new TimeSpan(0, 0, 30);
+            tcpB.MaxBufferPoolSize = 1000;
+            tcpB.MaxReceivedMessageSize = 1000;
+            tcpB.MaxBufferSize = 1000;
+            tcpB.ReaderQuotas.MaxArrayLength = 1000;
+            tcpB.ReaderQuotas.MaxDepth = 10;
+            tcpB.ReaderQuotas.MaxBytesPerRead = 1000;
+            tcpB.ReaderQuotas.MaxStringContentLength = 1000;
+
             string URL = "net.tcp://localhost:8100/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();
@@ -455,22 +468,14 @@ namespace ClientWPF
             {
                 ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
             }
-
         }
 
-        private List<object[]> mockDataMessages()
+        private List<object[]> getMsgData()
         {
-            List<object[]> data = null;
-            try
-            {
-                data = foob.mockData();
-            }
-            catch(CommunicationException cE)
-            {
-                ChatRoomWarning_Label.Content = "Connection Lost!: " + cE.Message;
-                connectToServer();
-            }
-            return data;
+            List<object[]> objList = new List<object[]>();
+            object obj = foob.getMessageData();
+            
+            return objList;
         }
 
         // Takes a List of type Object[] in which element is size 2
@@ -488,7 +493,8 @@ namespace ClientWPF
             {
                 //Change to foob.getMessages() once the server side updated to return object[] list
                 //List<object[]> messageData = new List<object[]>();
-                List<object[]> messageData = foob.mockData(); //For Testing Purposes
+                List<object[]> messageData = null; //For Testing Purposes
+                messageData = getMsgData();
                 textFileDataHolder = new List<string[]>();
                 int buttonIDCounter = 0;
 

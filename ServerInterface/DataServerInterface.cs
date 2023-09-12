@@ -5,6 +5,7 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using Database;
 
 namespace ServerInterface
 {
@@ -50,13 +51,22 @@ namespace ServerInterface
         //SendPrivateImage: able to send image data
         [OperationContract]
         void SendPrivateImage(string roomName, string fromUser, string toUser, Bitmap imgData);
+
         //SendPrivateTextFIle: able to send textFile data
         [OperationContract]
         void SendPrivateTextFile(string roomName, string fromUser, string toUser, string[] textFileData);
 
-        //Usage: only returns mock data for testing purposess
+        //TESTING
         [OperationContract]
-        List<object[]> mockData();
+        void mockData();
+
+        //TESTING
+        [OperationContract]
+        Message getMessageData();
+
+        //TESTING
+        [OperationContract]
+        int getEntryCount();
 
         [OperationContract]
         List<string> GetMessages(string roomName, string username);
