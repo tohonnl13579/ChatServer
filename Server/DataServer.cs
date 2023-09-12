@@ -110,6 +110,15 @@ namespace Server
             //Not implemented yet
         }
 
+        // FOR REFERENCE FOR ClientWPF
+        // Takes a List of type Object[] in which element is size 2
+        // Object[2] format:
+        // [string identifier , Bitmap imgData/string messageData/string[] textFileData]
+        //
+        // string identifier FORMAT:
+        // for public msg: <username>: 
+        // for private msg: <fromUser> -> <toUser>:
+
         public List<string> GetMessages(string roomName, string username)
         {
             List<string> messagesString = new List<string>();
