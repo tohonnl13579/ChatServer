@@ -51,7 +51,7 @@ namespace ClientWPF
             //Button Functionality
             Warning_Label.Content = "";
             string username = Username_TextBox.Text;
-            if (username.Length == 0)
+            if (username.Equals("") || username == null)
             {
                 //Case of Empty given field by user
                 Warning_Label.Content = "Username field should not be empty!";

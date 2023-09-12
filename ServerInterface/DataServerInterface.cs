@@ -50,7 +50,7 @@ namespace ServerInterface
         //SendPrivateImage: able to send image data
         [OperationContract]
         void SendPrivateImage(string roomName, string fromUser, string toUser, Bitmap imgData);
-        \//SendPrivateTextFIle: able to send textFile data
+        //SendPrivateTextFIle: able to send textFile data
         [OperationContract]
         void SendPrivateTextFile(string roomName, string fromUser, string toUser, string[] textFileData);
 

@@ -231,7 +231,6 @@ namespace ClientWPF
                 if(currChatRoom != null)
                 {
                     foob.LeaveChatRoom(currChatRoom, loggedUser);
-                    //currChatRoom = null;
                     Label_ChatRoom.Content = "Select a room to enter...";
                 }
 
@@ -284,12 +283,11 @@ namespace ClientWPF
                     {
                         if(loadedImageData != null)
                         {
-                            foob.SendPublicImgMessage(currChatRoom, loggedUser, loadedImageData);
+                            foob.SendPublicImage(currChatRoom, loggedUser, loadedImageData);
                         }
                         else
                         {
-                            //THIS IS YET TO BE ADDED
-                            //foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData)
+                            foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData);
                         }
                     }
                     else
@@ -297,12 +295,11 @@ namespace ClientWPF
                         foob.SendPublicMessage(currChatRoom, loggedUser, message);
                         if (loadedImageData != null)
                         {
-                            foob.SendPublicImgMessage(currChatRoom, loggedUser, loadedImageData);
+                            foob.SendPublicImage(currChatRoom, loggedUser, loadedImageData);
                         }
                         else
                         {
-                            //THIS IS YET TO BE ADDED
-                            //foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData)
+                            foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData);
                         }
                         TextBox_TextChatBox.Text = "";
                     }
@@ -363,12 +360,11 @@ namespace ClientWPF
                         {
                             if (loadedImageData != null)
                             {
-                                foob.SendPrivateImgMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
+                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
                             }
                             else
-                            {
-                                //THIS IS YET TO BE ADDED
-                                //foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
+                            { 
+                                foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
                             }
                         }
                         else
@@ -376,12 +372,11 @@ namespace ClientWPF
                             foob.SendPrivateMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, message);
                             if (loadedImageData != null)
                             {
-                                foob.SendPrivateImgMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
+                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
                             }
                             else
                             {
-                                //THIS IS YET TO BE ADDED
-                                //foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
+                                foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
                             }
                             TextBox_TextChatBox.Text = "";
                         }

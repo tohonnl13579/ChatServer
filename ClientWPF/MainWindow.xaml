@@ -10,7 +10,7 @@
         <Button x:Name="LoginButton" Content="Log In" HorizontalAlignment="Center" Margin="0,217,0,0" VerticalAlignment="Top" Height="30" Width="90" Click="LoginButton_Click" FontSize="14"/>
         <TextBox x:Name="Username_TextBox" HorizontalAlignment="Left" Margin="302,172,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="199" Height="28" FontSize="15"/>
         <Label x:Name="Username" Content="Username:" HorizontalAlignment="Left" Margin="214,172,0,0" VerticalAlignment="Top" FontSize="15" FontWeight="Bold"/>
-        <Label x:Name="Warning_Label" Content="Label" HorizontalAlignment="Center" Margin="0,307,0,0" VerticalAlignment="Top" FontSize="15" FontWeight="DemiBold" Foreground="DarkRed" RenderTransformOrigin="0.578,-0.215" Width="173" HorizontalContentAlignment="Center"/>
+        <Label x:Name="Warning_Label" Content="Label" HorizontalAlignment="Center" Margin="0,307,0,0" VerticalAlignment="Top" FontSize="15" FontWeight="DemiBold" Foreground="DarkRed" RenderTransformOrigin="0.578,-0.215" Width="342" HorizontalContentAlignment="Center"/>
         <Button x:Name="Button_EnterChatRoom" Content="Enter ChatRoom" HorizontalAlignment="Left" Margin="339,259,0,0" VerticalAlignment="Top" Height="30" Width="125" Click="EnterChatRoom_Click" FontSize="14"/>
         <Label x:Name="LoggedIn_Label" Content="Label" HorizontalAlignment="Left" Margin="298,136,0,0" VerticalAlignment="Top" FontSize="15" FontWeight="DemiBold" RenderTransformOrigin="0.578,-0.215" Width="201"/>
         <Rectangle x:Name="Rectangle1" HorizontalAlignment="Left" Height="306" Margin="196,75,0,0" Stroke="Black" VerticalAlignment="Top" Width="408" />
