@@ -37,11 +37,6 @@
         </ListBox>
         <Label x:Name="Label_RoomList" Content="Available Rooms" HorizontalAlignment="Left" VerticalAlignment="Top" Width="161" Height="31" Background="#FFB1AEAE" HorizontalContentAlignment="Center" FontSize="13"/>
         <ListView x:Name="ListView_ChatWindow" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="161,31,0,0" Width="524" Height="339" HorizontalAlignment="Left" VerticalAlignment="Top">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn/>
-                </GridView>
-            </ListView.View>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Left"/>
