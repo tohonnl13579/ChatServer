@@ -28,7 +28,7 @@ namespace Server
             tcp.ReaderQuotas.MaxArrayLength = 100000;
             tcp.ReaderQuotas.MaxDepth = 10;
             tcp.ReaderQuotas.MaxBytesPerRead = 10000000; //10MB 
-            tcp.ReaderQuotas.MaxStringContentLength = 100000;
+            tcp.ReaderQuotas.MaxStringContentLength = 1000000; //1MB
 
             //Creates 5 ports for connection = Up to 4 users can be online
             host = new ServiceHost(typeof(DataServer));

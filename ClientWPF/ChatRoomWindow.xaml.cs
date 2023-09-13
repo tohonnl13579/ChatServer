@@ -69,7 +69,7 @@ namespace ClientWPF
             tcpB.ReaderQuotas.MaxArrayLength = 1000000;
             tcpB.ReaderQuotas.MaxDepth = 100;
             tcpB.ReaderQuotas.MaxBytesPerRead = 10000000;
-            tcpB.ReaderQuotas.MaxStringContentLength = 100000;
+            tcpB.ReaderQuotas.MaxStringContentLength = 1000000;
 
             string URL = "net.tcp://localhost:"+ portNum +"/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
