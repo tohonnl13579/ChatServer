@@ -23,15 +23,17 @@ namespace Server
             tcp.ReceiveTimeout = new TimeSpan(0, 0, 10);
             tcp.SendTimeout = new TimeSpan(0, 0, 30);
             tcp.MaxBufferPoolSize = 10000;
-            tcp.MaxReceivedMessageSize = 700000;
-            tcp.MaxBufferSize = 700000;
-            tcp.ReaderQuotas.MaxArrayLength = 10000;
-            tcp.ReaderQuotas.MaxArrayLength = 10000;
+            tcp.MaxReceivedMessageSize = 10000000; //10MB
+            tcp.MaxBufferSize = 10000000; //10MB
+            tcp.ReaderQuotas.MaxArrayLength = 100000;
             tcp.ReaderQuotas.MaxDepth = 10;
-            tcp.ReaderQuotas.MaxBytesPerRead = 10000;
-            tcp.ReaderQuotas.MaxStringContentLength = 10000;
+            tcp.ReaderQuotas.MaxBytesPerRead = 100000;
+            tcp.ReaderQuotas.MaxStringContentLength = 100000;
 
+            //Creates 5 ports for connection = Up to 4 users can be online
             host = new ServiceHost(typeof(DataServer));
+            host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
+            host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
             host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
             host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
             host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());

@@ -45,6 +45,18 @@ namespace ClientWPF
         private void connectToServer()
         {
             NetTcpBinding tcpB = new NetTcpBinding();
+
+            tcpB.CloseTimeout = new TimeSpan(0, 0, 10);
+            tcpB.ReceiveTimeout = new TimeSpan(0, 0, 10);
+            tcpB.SendTimeout = new TimeSpan(0, 0, 30);
+            tcpB.MaxBufferPoolSize = 100000;
+            tcpB.MaxReceivedMessageSize = 700000;
+            tcpB.MaxBufferSize = 700000;
+            tcpB.ReaderQuotas.MaxArrayLength = 10000;
+            tcpB.ReaderQuotas.MaxDepth = 10;
+            tcpB.ReaderQuotas.MaxBytesPerRead = 10000;
+            tcpB.ReaderQuotas.MaxStringContentLength = 10000;
+
             string URL = "net.tcp://localhost:8100/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();

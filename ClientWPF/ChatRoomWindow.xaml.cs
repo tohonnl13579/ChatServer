@@ -38,7 +38,7 @@ namespace ClientWPF
             InitializeComponent();
             ChatRoomWarning_Label.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
             loggedUser = user;
-            maxConnectAtt = 6;
+            maxConnectAtt = 11;
             ChatRoomWarning_Label.Content = "Welcome to the ChatRoom";
             TextBox_TextChatBox.Text = "";
             TextBox_PrivateMsgUser.Text = "";
@@ -58,17 +58,16 @@ namespace ClientWPF
         {
             bool connect = true;
             NetTcpBinding tcpB = new NetTcpBinding();
-            tcpB.CloseTimeout = new TimeSpan(0,0,10);
             tcpB.CloseTimeout = new TimeSpan(0, 0, 5);
             tcpB.ReceiveTimeout = new TimeSpan(0, 0, 10);
             tcpB.SendTimeout = new TimeSpan(0, 0, 30);
             tcpB.MaxBufferPoolSize = 100000;
-            tcpB.MaxReceivedMessageSize = 700000;
-            tcpB.MaxBufferSize = 700000;
-            tcpB.ReaderQuotas.MaxArrayLength = 10000;
+            tcpB.MaxReceivedMessageSize = 10000000;
+            tcpB.MaxBufferSize = 10000000;
+            tcpB.ReaderQuotas.MaxArrayLength = 100000;
             tcpB.ReaderQuotas.MaxDepth = 10;
-            tcpB.ReaderQuotas.MaxBytesPerRead = 10000;
-            tcpB.ReaderQuotas.MaxStringContentLength = 10000;
+            tcpB.ReaderQuotas.MaxBytesPerRead = 1000000;
+            tcpB.ReaderQuotas.MaxStringContentLength = 100000;
 
             string URL = "net.tcp://localhost:8200/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
@@ -212,6 +211,7 @@ namespace ClientWPF
                 try //First try to parse into Bitmap
                 {
                     loadedImageData = new Bitmap(selectedFilePath);
+                    loadedImageData.SetResolution(500, 500);
                 }
                 catch (ArgumentException aE) //if parsing fails
                 {
@@ -298,6 +298,7 @@ namespace ClientWPF
                         if(loadedImageData != null)
                         {
                             foob.SendPublicImage(currChatRoom, loggedUser, loadedImageData);
+                            loadedImageData.Dispose();
                         }
                         else
                         {
@@ -310,6 +311,7 @@ namespace ClientWPF
                         if (loadedImageData != null)
                         {
                             foob.SendPublicImage(currChatRoom, loggedUser, loadedImageData);
+                            loadedImageData.Dispose();
                         }
                         else
                         {
@@ -375,6 +377,7 @@ namespace ClientWPF
                             if (loadedImageData != null)
                             {
                                 foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
+                                loadedImageData.Dispose();
                             }
                             else
                             { 
@@ -387,6 +390,7 @@ namespace ClientWPF
                             if (loadedImageData != null)
                             {
                                 foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
+                                loadedImageData.Dispose();
                             }
                             else
                             {
