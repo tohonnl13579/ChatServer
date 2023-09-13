@@ -10,19 +10,21 @@ namespace Server
 {
     internal class Program
     {
+        private static int portNum = 8100;
         static void Main(string[] args)
         {
             Console.WriteLine("### Simple Chat Server ###");
             ServiceHost host;
             NetTcpBinding tcp = new NetTcpBinding();
+            string url = "net.tcp://0.0.0.0:8100/DataService";
 
             tcp.OpenTimeout = new TimeSpan(0, 0, 5);
             tcp.CloseTimeout = new TimeSpan(0, 0, 5);
             tcp.ReceiveTimeout = new TimeSpan(0, 0, 10);
             tcp.SendTimeout = new TimeSpan(0, 0, 30);
             tcp.MaxBufferPoolSize = 10000;
-            tcp.MaxReceivedMessageSize = 500000;
-            tcp.MaxBufferSize = 500000;
+            tcp.MaxReceivedMessageSize = 700000;
+            tcp.MaxBufferSize = 700000;
             tcp.ReaderQuotas.MaxArrayLength = 10000;
             tcp.ReaderQuotas.MaxArrayLength = 10000;
             tcp.ReaderQuotas.MaxDepth = 10;
@@ -30,7 +32,9 @@ namespace Server
             tcp.ReaderQuotas.MaxStringContentLength = 10000;
 
             host = new ServiceHost(typeof(DataServer));
-            host.AddServiceEndpoint(typeof(DataServerInterface), tcp, "net.tcp://0.0.0.0:8100/DataService");
+            host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
+            host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
+            host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
             host.Open();
 
             Console.WriteLine(" ChatServer is now online! ");
@@ -40,6 +44,14 @@ namespace Server
             Console.WriteLine(" Press enter one more time to close server...");
             Console.ReadLine();
             host.Close();
+        }
+
+        private static string urlBuilder()
+        {
+            string fullUrl, baseUrlFront = "net.tcp://localhost:", baseUrlTail = "/DataService";
+            fullUrl = (baseUrlFront + portNum + baseUrlTail);
+            portNum = portNum + 100;
+            return fullUrl;
         }
     }
 }

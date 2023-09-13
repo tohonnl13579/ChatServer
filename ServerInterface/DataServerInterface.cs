@@ -71,6 +71,10 @@ namespace ServerInterface
         [OperationContract]
         List<string> GetMessages(string roomName, string username);
 
+        //WIP
+        [OperationContract]
+        List<Message> GetMSGs(string roomName, string username);
+
         [OperationContract]
         List<string> GetChatRoomList();
 

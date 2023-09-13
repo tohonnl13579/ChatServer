@@ -33,7 +33,7 @@ namespace ClientWPF
         private string[] loadedTextFileData;
         private int maxConnectAtt;
         List<string[]> textFileDataHolder;
-        public ChatRoomWindow(string user)
+        public ChatRoomWindow(string user, int portNum)
         {
             InitializeComponent();
             ChatRoomWarning_Label.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
@@ -70,7 +70,7 @@ namespace ClientWPF
             tcpB.ReaderQuotas.MaxBytesPerRead = 10000;
             tcpB.ReaderQuotas.MaxStringContentLength = 10000;
 
-            string URL = "net.tcp://localhost:8100/DataService";
+            string URL = "net.tcp://localhost:8200/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();
             Label_LoggedAs.Content = "Logged in as: " + loggedUser;
@@ -473,37 +473,47 @@ namespace ClientWPF
         //This function will convert Message data objects into a list of object[]
         private List<object[]> getMsgData()
         {
-            List<object[]> objList = new List<object[]>();
-            int count = foob.getMessageEntryCount();
-            List<Database.Message> msgList = foob.getMessageListData();
-            for(int i = 0; i < count; i++)
+            List<object[]> objList = null;
+            //List<Database.Message> msgList = foob.getMessageListData();
+            if(currChatRoom == null)
             {
-                object[] obj = new object[2];
-                Database.Message msg = msgList[i];
-                if(msg.toUser == null)
-                {
-                    String identifier = msg.fromUser;
-                    obj[0] = identifier;
-                }
-                else
-                {
-                    String identifier = msg.fromUser + " -> " + msg.toUser;
-                    obj[0] = identifier;
-                }
+                //Invalid, so return null
+            }
+            else
+            {
+                objList = new List<object[]>();
+                List<Database.Message> msgList = foob.GetMSGs(currChatRoom, loggedUser);
+                int count = msgList.Count;
 
-                if(msg.message != null)
+                for (int i = 0; i < count; i++)
                 {
-                    obj[1] = msg.message;
+                    object[] obj = new object[2];
+                    Database.Message msg = msgList[i];
+                    if (msg.toUser == null)
+                    {
+                        String identifier = msg.fromUser;
+                        obj[0] = identifier;
+                    }
+                    else
+                    {
+                        String identifier = msg.fromUser + " -> " + msg.toUser;
+                        obj[0] = identifier;
+                    }
+
+                    if (msg.message != null)
+                    {
+                        obj[1] = msg.message;
+                    }
+                    else if (msg.imageData != null)
+                    {
+                        obj[1] = msg.imageData;
+                    }
+                    else if (msg.textFileData != null)
+                    {
+                        obj[1] = msg.textFileData;
+                    }
+                    objList.Add(obj);
                 }
-                else if(msg.imageData != null)
-                {
-                    obj[1] = msg.imageData;
-                }
-                else if(msg.textFileData != null)
-                {
-                    obj[1] = msg.textFileData;
-                }
-                objList.Add(obj);
             }
             
             return objList;
