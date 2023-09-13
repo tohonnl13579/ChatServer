@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.ServiceModel;
 using System.Text;
@@ -184,6 +185,7 @@ namespace Server
         // Just send a List<Message> to the client, After pain and suffering, this is the solution 
         // Refer to above Example Within //TESTING markers
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public List<string> GetMessages(string roomName, string username)
         {
             List<string> messagesString = new List<string>();

@@ -62,9 +62,9 @@ namespace ClientWPF
             tcpB.CloseTimeout = new TimeSpan(0, 0, 5);
             tcpB.ReceiveTimeout = new TimeSpan(0, 0, 10);
             tcpB.SendTimeout = new TimeSpan(0, 0, 30);
-            tcpB.MaxBufferPoolSize = 10000;
-            tcpB.MaxReceivedMessageSize = 500000;
-            tcpB.MaxBufferSize = 500000;
+            tcpB.MaxBufferPoolSize = 100000;
+            tcpB.MaxReceivedMessageSize = 700000;
+            tcpB.MaxBufferSize = 700000;
             tcpB.ReaderQuotas.MaxArrayLength = 10000;
             tcpB.ReaderQuotas.MaxDepth = 10;
             tcpB.ReaderQuotas.MaxBytesPerRead = 10000;
