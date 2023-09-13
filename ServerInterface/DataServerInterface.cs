@@ -39,7 +39,7 @@ namespace ServerInterface
 
         //SendPublicImage: able to send image data
         [OperationContract]
-        void SendPublicImage(string roomName, string username, Bitmap imgData);
+        void SendPublicImage(string roomName, string username, string imgData);
 
         //SendPublicTextFile: able to send textFile data
         [OperationContract]
@@ -50,7 +50,7 @@ namespace ServerInterface
 
         //SendPrivateImage: able to send image data
         [OperationContract]
-        void SendPrivateImage(string roomName, string fromUser, string toUser, Bitmap imgData);
+        void SendPrivateImage(string roomName, string fromUser, string toUser, string imgData);
 
         //SendPrivateTextFIle: able to send textFile data
         [OperationContract]
@@ -70,6 +70,10 @@ namespace ServerInterface
 
         [OperationContract]
         List<string> GetMessages(string roomName, string username);
+
+        //WIP
+        [OperationContract]
+        List<Message> GetMSGs(string roomName, string username);
 
         [OperationContract]
         List<string> GetChatRoomList();

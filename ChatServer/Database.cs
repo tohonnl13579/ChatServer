@@ -91,14 +91,36 @@ namespace ChatServer
             }
         }
 
-        public void SendImage(string roomName, string fromUser, string toUser, Bitmap imageData)
+        public void SendImage(string roomName, string fromUser, string toUser, string base64ImageData)
         {
-            //Needs Implementation
+            for (int i = 0; i < chatrooms.Count; i++)
+            {
+                if (chatrooms[i].roomName.Equals(roomName))
+                {
+                    Message messageItem = new Message();
+                    messageItem.fromUser = fromUser;
+                    messageItem.toUser = toUser;
+                    messageItem.imageData = base64ImageData;
+                    chatrooms[i].messages.Add(messageItem);
+                    break;
+                }
+            }
         }
 
         public void SendTextFile(string roomName, string fromUser, string toUser, string[] textFileData)
         {
-            //Needs Implementation
+            for (int i = 0; i < chatrooms.Count; i++)
+            {
+                if (chatrooms[i].roomName.Equals(roomName))
+                {
+                    Message messageItem = new Message();
+                    messageItem.fromUser = fromUser;
+                    messageItem.toUser = toUser;
+                    messageItem.textFileData = textFileData;
+                    chatrooms[i].messages.Add(messageItem);
+                    break;
+                }
+            }
         }
 
         public HashSet<string> GetUserListInRoom(string roomName)

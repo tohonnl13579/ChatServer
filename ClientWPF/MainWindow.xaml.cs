@@ -23,6 +23,8 @@ namespace ClientWPF
         private DataServerInterface foob;
         private ChannelFactory<DataServerInterface> foobFactory;
         private string loggedUser;
+        private int portNumForClient;
+        private List<string> userLogged;
         public MainWindow()
         {
             InitializeComponent();
@@ -32,7 +34,9 @@ namespace ClientWPF
             Username_TextBox.Text = "";
             LoggedIn_Label.Content = "Logged in as: ";
             Button_EnterChatRoom.Visibility = Visibility.Hidden;
-            Button_EnterChatRoom.IsEnabled = false; 
+            Button_EnterChatRoom.IsEnabled = false;
+            portNumForClient = 8200;
+            userLogged = new List<string>();
 
             connectToServer();
         }
@@ -41,6 +45,18 @@ namespace ClientWPF
         private void connectToServer()
         {
             NetTcpBinding tcpB = new NetTcpBinding();
+
+            tcpB.CloseTimeout = new TimeSpan(0, 0, 10);
+            tcpB.ReceiveTimeout = new TimeSpan(0, 0, 10);
+            tcpB.SendTimeout = new TimeSpan(0, 0, 30);
+            tcpB.MaxBufferPoolSize = 100000;
+            tcpB.MaxReceivedMessageSize = 700000;
+            tcpB.MaxBufferSize = 700000;
+            tcpB.ReaderQuotas.MaxArrayLength = 10000;
+            tcpB.ReaderQuotas.MaxDepth = 10;
+            tcpB.ReaderQuotas.MaxBytesPerRead = 10000;
+            tcpB.ReaderQuotas.MaxStringContentLength = 10000;
+
             string URL = "net.tcp://localhost:8100/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();
@@ -79,15 +95,30 @@ namespace ClientWPF
         //This function is called once user is logged in and they press the "Enter ChatRoom Button"
         private void enterChatRoom()
         {
-            ChatRoomWindow chatRoomWindow = new ChatRoomWindow(loggedUser);
-            if (chatRoomWindow != null) { 
+            ChatRoomWindow chatRoomWindow = new ChatRoomWindow(loggedUser, portNumForClient);
+            portNumForClient = portNumForClient + 100;
+            if (chatRoomWindow != null) {
+                userLogged.Add(loggedUser);
                 chatRoomWindow.Show();
-                this.Close();
+                //this.Close();
             }
             else
             {
                 Warning_Label.Content = "Failed to switch windows";
             }
+        }
+
+        private bool checkIfAlreadyIn(string user)
+        {
+            bool returnVal = false;
+            foreach(string userInList in userLogged)
+            {
+                if (userInList.Equals(user))
+                {
+                    returnVal = true;
+                }
+            }
+            return returnVal;
         }
 
         private void EnterChatRoom_Click(object sender, RoutedEventArgs e)
@@ -96,11 +127,14 @@ namespace ClientWPF
             //Attempt to close the connection, so the other window can connect
             try
             {
-                ((ICommunicationObject)foob).Close();
-                foobFactory.Close();
-
-                //Enter chatroom window
-                enterChatRoom();
+                if (checkIfAlreadyIn(loggedUser))
+                {
+                    Warning_Label.Content = "User is already logged in!";
+                }
+                else
+                {
+                    enterChatRoom();
+                }
             }
             catch (Exception eR)
             {

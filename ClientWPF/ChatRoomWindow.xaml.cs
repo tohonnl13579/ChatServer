@@ -19,6 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Drawing.Imaging;
 
 namespace ClientWPF
 {
@@ -31,14 +32,14 @@ namespace ClientWPF
         private Bitmap loadedImageData;
         private string selectedFilePath;
         private string[] loadedTextFileData;
-        private int maxConnectAtt;
+        private int maxConnectAtt, portNum;
         List<string[]> textFileDataHolder;
-        public ChatRoomWindow(string user)
+        public ChatRoomWindow(string user, int portNum)
         {
             InitializeComponent();
             ChatRoomWarning_Label.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
             loggedUser = user;
-            maxConnectAtt = 6;
+            maxConnectAtt = 11;
             ChatRoomWarning_Label.Content = "Welcome to the ChatRoom";
             TextBox_TextChatBox.Text = "";
             TextBox_PrivateMsgUser.Text = "";
@@ -49,6 +50,7 @@ namespace ClientWPF
             textFileDataHolder = null;
             ListView_ChatWindow.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
             Console.WriteLine("Hello World");
+            this.portNum = portNum;
             connectToServer();
             foob.mockData(); //TESTING PURPOSES
             updateRooms();
@@ -58,19 +60,18 @@ namespace ClientWPF
         {
             bool connect = true;
             NetTcpBinding tcpB = new NetTcpBinding();
-            tcpB.CloseTimeout = new TimeSpan(0,0,10);
             tcpB.CloseTimeout = new TimeSpan(0, 0, 5);
             tcpB.ReceiveTimeout = new TimeSpan(0, 0, 10);
             tcpB.SendTimeout = new TimeSpan(0, 0, 30);
-            tcpB.MaxBufferPoolSize = 100000;
-            tcpB.MaxReceivedMessageSize = 700000;
-            tcpB.MaxBufferSize = 700000;
-            tcpB.ReaderQuotas.MaxArrayLength = 10000;
-            tcpB.ReaderQuotas.MaxDepth = 10;
-            tcpB.ReaderQuotas.MaxBytesPerRead = 10000;
-            tcpB.ReaderQuotas.MaxStringContentLength = 10000;
+            tcpB.MaxBufferPoolSize = 50000000;
+            tcpB.MaxReceivedMessageSize = 50000000;
+            tcpB.MaxBufferSize = 50000000;
+            tcpB.ReaderQuotas.MaxArrayLength = 1000000;
+            tcpB.ReaderQuotas.MaxDepth = 100;
+            tcpB.ReaderQuotas.MaxBytesPerRead = 10000000;
+            tcpB.ReaderQuotas.MaxStringContentLength = 100000;
 
-            string URL = "net.tcp://localhost:8100/DataService";
+            string URL = "net.tcp://localhost:"+ portNum +"/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();
             Label_LoggedAs.Content = "Logged in as: " + loggedUser;
@@ -143,6 +144,8 @@ namespace ClientWPF
                 fileBrowser();
                 if (selectedFilePath == null)
                 {
+                    loadedImageData = null;
+                    loadedTextFileData = null;
                     ChatRoomWarning_Label.Content = "No file was chosen...";
                     Button_FileSend.Content = "File";
                 }
@@ -207,11 +210,14 @@ namespace ClientWPF
 
         private void imageAndTextFileReader()
         {
+            loadedImageData = null;
+            loadedTextFileData = null;
             try
             {
                 try //First try to parse into Bitmap
                 {
                     loadedImageData = new Bitmap(selectedFilePath);
+                    loadedImageData.SetResolution(500, 500);
                 }
                 catch (ArgumentException aE) //if parsing fails
                 {
@@ -233,6 +239,59 @@ namespace ClientWPF
                 loadedTextFileData = null;
                 ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
             }
+        }
+
+        private string convertBitmapToStr(Bitmap bitmap)
+        {
+            string base64Str = null;
+            if(bitmap != null)
+            {
+                try
+                {
+                    byte[] bitmapBytes;
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        bitmap.Save(stream, ImageFormat.Png);
+                        bitmapBytes = stream.ToArray();
+                    }
+                    base64Str = Convert.ToBase64String(bitmapBytes);
+                        
+                }
+                catch (Exception eR)
+                {
+                    ChatRoomWarning_Label.Content = "Failed to convert bitmap to string" + eR.Message;
+                }
+            }
+            return base64Str;
+        }
+
+        private Bitmap convertStrToBitmap(string base64)
+        {
+            Bitmap bitmap = null;
+            if (base64 != null)
+            {
+                try
+                {
+                    //Convert Base64 string to byte[]
+                    byte[] byteBuffer = Convert.FromBase64String(base64);
+                    MemoryStream memoryStream = new MemoryStream(byteBuffer);
+
+                    memoryStream.Position = 0;
+
+                    bitmap = (Bitmap)Bitmap.FromStream(memoryStream);
+
+                    memoryStream.Close();
+                    memoryStream = null;
+                    byteBuffer = null;
+
+                    return bitmap;
+                }
+                catch(Exception eR)
+                {
+                    ChatRoomWarning_Label.Content = "Failed to convert bse64 string to bitmap" + eR.Message;
+                }
+            }
+            return bitmap;
         }
 
         //When user clicks on any room under room list, the user will be redirected to that chat room
@@ -297,7 +356,8 @@ namespace ClientWPF
                     {
                         if(loadedImageData != null)
                         {
-                            foob.SendPublicImage(currChatRoom, loggedUser, loadedImageData);
+                            foob.SendPublicImage(currChatRoom, loggedUser, convertBitmapToStr(loadedImageData));
+                            loadedImageData.Dispose();
                         }
                         else
                         {
@@ -309,7 +369,8 @@ namespace ClientWPF
                         foob.SendPublicMessage(currChatRoom, loggedUser, message);
                         if (loadedImageData != null)
                         {
-                            foob.SendPublicImage(currChatRoom, loggedUser, loadedImageData);
+                            foob.SendPublicImage(currChatRoom, loggedUser, convertBitmapToStr(loadedImageData));
+                            loadedImageData.Dispose();
                         }
                         else
                         {
@@ -374,7 +435,8 @@ namespace ClientWPF
                         {
                             if (loadedImageData != null)
                             {
-                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
+                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, convertBitmapToStr(loadedImageData));
+                                loadedImageData.Dispose();
                             }
                             else
                             { 
@@ -386,7 +448,8 @@ namespace ClientWPF
                             foob.SendPrivateMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, message);
                             if (loadedImageData != null)
                             {
-                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
+                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, convertBitmapToStr(loadedImageData));
+                                loadedImageData.Dispose();
                             }
                             else
                             {
@@ -473,37 +536,47 @@ namespace ClientWPF
         //This function will convert Message data objects into a list of object[]
         private List<object[]> getMsgData()
         {
-            List<object[]> objList = new List<object[]>();
-            int count = foob.getMessageEntryCount();
-            List<Database.Message> msgList = foob.getMessageListData();
-            for(int i = 0; i < count; i++)
+            List<object[]> objList = null;
+            //List<Database.Message> msgList = foob.getMessageListData();
+            if(currChatRoom == null)
             {
-                object[] obj = new object[2];
-                Database.Message msg = msgList[i];
-                if(msg.toUser == null)
-                {
-                    String identifier = msg.fromUser;
-                    obj[0] = identifier;
-                }
-                else
-                {
-                    String identifier = msg.fromUser + " -> " + msg.toUser;
-                    obj[0] = identifier;
-                }
+                //Invalid, so return null
+            }
+            else
+            {
+                objList = new List<object[]>();
+                List<Database.Message> msgList = foob.GetMSGs(currChatRoom, loggedUser);
+                int count = msgList.Count;
 
-                if(msg.message != null)
+                for (int i = 0; i < count; i++)
                 {
-                    obj[1] = msg.message;
+                    object[] obj = new object[2];
+                    Database.Message msg = msgList[i];
+                    if (msg.toUser == null)
+                    {
+                        String identifier = msg.fromUser;
+                        obj[0] = identifier;
+                    }
+                    else
+                    {
+                        String identifier = msg.fromUser + " -> " + msg.toUser;
+                        obj[0] = identifier;
+                    }
+
+                    if (msg.message != null)
+                    {
+                        obj[1] = msg.message;
+                    }
+                    else if (msg.imageData != null)
+                    {
+                        obj[1] = convertStrToBitmap(msg.imageData);
+                    }
+                    else if (msg.textFileData != null)
+                    {
+                        obj[1] = msg.textFileData;
+                    }
+                    objList.Add(obj);
                 }
-                else if(msg.imageData != null)
-                {
-                    obj[1] = msg.imageData;
-                }
-                else if(msg.textFileData != null)
-                {
-                    obj[1] = msg.textFileData;
-                }
-                objList.Add(obj);
             }
             
             return objList;

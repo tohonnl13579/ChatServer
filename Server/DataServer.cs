@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.ServiceModel;
+//using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using ChatServer;
@@ -13,12 +14,11 @@ using ServerInterface;
 
 namespace Server
 {
-    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = true)]
     internal class DataServer : DataServerInterface
     {
         private static ChatServer.Database db = new ChatServer.Database();
 
-        //List<object[]> objList = new List<object[]>();
         List<Message> messageData = new List<Message>(); // TESTING
 
         public int GetNumEntries()
@@ -85,14 +85,20 @@ namespace Server
             }
         }
 
-        public void SendPublicImage(string roomName, string username, Bitmap imgData)
+        public void SendPublicImage(string roomName, string username, string imgData)
         {
-            //Not implemented yet
+            if (CheckRoomExisted(roomName))
+            {
+                db.SendImage(roomName, username, null, imgData);
+            }
         }
 
         public void SendPublicTextFile(string roomName, string username, string[] textFileData)
         {
-            //Not implemented yet
+            if (CheckRoomExisted(roomName))
+            {
+                db.SendTextFile(roomName, username, null, textFileData);
+            }
         }
 
         public void SendPrivateMessage(string roomName, string fromUser, string toUser, string message)
@@ -106,14 +112,26 @@ namespace Server
             }
         }
 
-        public void SendPrivateImage(string roomName, string fromUser, string toUser, Bitmap imgData)
+        public void SendPrivateImage(string roomName, string fromUser, string toUser, string imgData)
         {
-            //Not implemented yet
+            if (CheckRoomExisted(roomName))
+            {
+                if (CheckUserExistedInRoom(roomName, toUser))
+                {
+                    db.SendImage(roomName, fromUser, toUser, imgData);
+                }
+            }
         }
 
         public void SendPrivateTextFile(string roomName, string fromUser, string toUser, string[] textFileData)
         {
-            //Not implemented yet
+            if (CheckRoomExisted(roomName))
+            {
+                if (CheckUserExistedInRoom(roomName, toUser))
+                {
+                    db.SendTextFile(roomName, fromUser, toUser, textFileData);
+                }
+            }
         }
 
         //TESTING
@@ -154,7 +172,7 @@ namespace Server
             data4.toUser = "Ramprakash";
             data4.textFileData = mockTextFileData2;
 
-            
+            /*
             Message data5 = new Message();
             Bitmap bitmap = new Bitmap(500, 500);
             Graphics graph = Graphics.FromImage(bitmap);
@@ -162,12 +180,13 @@ namespace Server
             graph.FillRectangle(Brushes.Gray, ImageSize);
             data5.fromUser = "Ariel";
             data5.imageData = bitmap;
+            */
 
             messageData.Add(data1);
             messageData.Add(data2);
             messageData.Add(data3);
             messageData.Add(data4);
-            messageData.Add(data5);
+            //messageData.Add(data5);
         }
 
         public List<Message> getMessageListData()
@@ -220,6 +239,38 @@ namespace Server
             }
 
             return messagesString;
+        }
+
+        //CURRENTLY WIP
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public List<Message> GetMSGs(string roomName, string username)
+        {
+            List<Message> userMessages = new List<Message>();
+            for (int i = 0; i < db.GetTotalRoom(); i++)
+            {
+                db.GetRoomNameByIndex(i, out string temproomname);
+                if (roomName.Equals(temproomname))
+                {
+                    db.GetRoomMessages(i, out List<Message> messages);
+                    //userMessages = messages;
+                    for(int y = 0; y < messages.Count; y++)
+                    {
+                        if (messages[y].toUser == null) //If the Message is public
+                        {
+                            userMessages.Add(messages[y]);
+                        }
+                        else //If the Message is private
+                        {
+                            if ((messages[y].toUser).Equals(username) || (messages[y].fromUser).Equals(username)) //Check if the private message is issued to the user or is the sender
+                            {
+                                userMessages.Add(messages[y]);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            return userMessages;
         }
 
         public List<string> GetChatRoomList()

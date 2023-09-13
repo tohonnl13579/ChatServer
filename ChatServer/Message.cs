@@ -12,7 +12,7 @@ namespace Database
         public string fromUser;
         public string toUser;
         public string message;
-        public Bitmap imageData;
+        public string imageData; //BASE64 String encoded Bitmap
         public string[] textFileData;
 
         public Message()
