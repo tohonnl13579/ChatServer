@@ -586,7 +586,7 @@ namespace ClientWPF
                                 identifierBlock.FontWeight = FontWeights.Bold;
 
                                 System.Windows.Controls.Button Button_linkToFile = new System.Windows.Controls.Button();
-                                Button_linkToFile.Height = 60;
+                                Button_linkToFile.Height = 40;
                                 Button_linkToFile.Width = 100;
                                 Button_linkToFile.Content = "Link to File";
                                 Button_linkToFile.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
@@ -660,7 +660,7 @@ namespace ClientWPF
             if(buttonAccess != null)
             {
                 int buttonID = buttonAccess.Name.Length;
-                /* UNTIL FILEVIEWER IS CREATED
+                
                 FileViewer fileViewerWindow = new FileViewer(textFileDataHolder[buttonID-1]);
                 if(fileViewerWindow != null)
                 {
@@ -670,7 +670,7 @@ namespace ClientWPF
                 {
                     ChatRoomWarning_Label.Content = "Failed to open file";
                 }
-                */
+                
             }
         }
 

@@ -145,13 +145,13 @@ namespace Server
             string[] mockTextFileData2= new string[5];
             mockTextFileData2[0] = "This";
             mockTextFileData2[1] = "is an example";
-            mockTextFileData2[2] = "textFile data";
+            mockTextFileData2[2] = "textFile data sent to Ram";
             mockTextFileData2[3] = "for testing purposes";
             mockTextFileData2[4] = "Thanks, Ariel";
             Message data4 = new Message();
             data4.fromUser = "Ariel";
             data4.toUser = "Ramprakash";
-            data4.textFileData = mockTextFileData;
+            data4.textFileData = mockTextFileData2;
 
             
             Message data5 = new Message();
