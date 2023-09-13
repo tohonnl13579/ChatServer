@@ -144,6 +144,8 @@ namespace ClientWPF
                 fileBrowser();
                 if (selectedFilePath == null)
                 {
+                    loadedImageData = null;
+                    loadedTextFileData = null;
                     ChatRoomWarning_Label.Content = "No file was chosen...";
                     Button_FileSend.Content = "File";
                 }
@@ -208,6 +210,8 @@ namespace ClientWPF
 
         private void imageAndTextFileReader()
         {
+            loadedImageData = null;
+            loadedTextFileData = null;
             try
             {
                 try //First try to parse into Bitmap
