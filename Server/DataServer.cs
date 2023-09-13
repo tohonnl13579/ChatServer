@@ -14,7 +14,7 @@ using ServerInterface;
 
 namespace Server
 {
-    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = true)]
     internal class DataServer : DataServerInterface
     {
         private static ChatServer.Database db = new ChatServer.Database();
@@ -85,7 +85,7 @@ namespace Server
             }
         }
 
-        public void SendPublicImage(string roomName, string username, Bitmap imgData)
+        public void SendPublicImage(string roomName, string username, string imgData)
         {
             if (CheckRoomExisted(roomName))
             {
@@ -112,7 +112,7 @@ namespace Server
             }
         }
 
-        public void SendPrivateImage(string roomName, string fromUser, string toUser, Bitmap imgData)
+        public void SendPrivateImage(string roomName, string fromUser, string toUser, string imgData)
         {
             if (CheckRoomExisted(roomName))
             {
@@ -172,7 +172,7 @@ namespace Server
             data4.toUser = "Ramprakash";
             data4.textFileData = mockTextFileData2;
 
-            
+            /*
             Message data5 = new Message();
             Bitmap bitmap = new Bitmap(500, 500);
             Graphics graph = Graphics.FromImage(bitmap);
@@ -180,12 +180,13 @@ namespace Server
             graph.FillRectangle(Brushes.Gray, ImageSize);
             data5.fromUser = "Ariel";
             data5.imageData = bitmap;
+            */
 
             messageData.Add(data1);
             messageData.Add(data2);
             messageData.Add(data3);
             messageData.Add(data4);
-            messageData.Add(data5);
+            //messageData.Add(data5);
         }
 
         public List<Message> getMessageListData()

@@ -19,6 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Drawing.Imaging;
 
 namespace ClientWPF
 {
@@ -31,7 +32,7 @@ namespace ClientWPF
         private Bitmap loadedImageData;
         private string selectedFilePath;
         private string[] loadedTextFileData;
-        private int maxConnectAtt;
+        private int maxConnectAtt, portNum;
         List<string[]> textFileDataHolder;
         public ChatRoomWindow(string user, int portNum)
         {
@@ -49,6 +50,7 @@ namespace ClientWPF
             textFileDataHolder = null;
             ListView_ChatWindow.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
             Console.WriteLine("Hello World");
+            this.portNum = portNum;
             connectToServer();
             foob.mockData(); //TESTING PURPOSES
             updateRooms();
@@ -61,15 +63,15 @@ namespace ClientWPF
             tcpB.CloseTimeout = new TimeSpan(0, 0, 5);
             tcpB.ReceiveTimeout = new TimeSpan(0, 0, 10);
             tcpB.SendTimeout = new TimeSpan(0, 0, 30);
-            tcpB.MaxBufferPoolSize = 100000;
-            tcpB.MaxReceivedMessageSize = 10000000;
-            tcpB.MaxBufferSize = 10000000;
-            tcpB.ReaderQuotas.MaxArrayLength = 100000;
-            tcpB.ReaderQuotas.MaxDepth = 10;
-            tcpB.ReaderQuotas.MaxBytesPerRead = 1000000;
+            tcpB.MaxBufferPoolSize = 50000000;
+            tcpB.MaxReceivedMessageSize = 50000000;
+            tcpB.MaxBufferSize = 50000000;
+            tcpB.ReaderQuotas.MaxArrayLength = 1000000;
+            tcpB.ReaderQuotas.MaxDepth = 100;
+            tcpB.ReaderQuotas.MaxBytesPerRead = 10000000;
             tcpB.ReaderQuotas.MaxStringContentLength = 100000;
 
-            string URL = "net.tcp://localhost:8200/DataService";
+            string URL = "net.tcp://localhost:"+ portNum +"/DataService";
             foobFactory = new ChannelFactory<DataServerInterface>(tcpB, URL);
             foob = foobFactory.CreateChannel();
             Label_LoggedAs.Content = "Logged in as: " + loggedUser;
@@ -235,6 +237,59 @@ namespace ClientWPF
             }
         }
 
+        private string convertBitmapToStr(Bitmap bitmap)
+        {
+            string base64Str = null;
+            if(bitmap != null)
+            {
+                try
+                {
+                    byte[] bitmapBytes;
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        bitmap.Save(stream, ImageFormat.Png);
+                        bitmapBytes = stream.ToArray();
+                    }
+                    base64Str = Convert.ToBase64String(bitmapBytes);
+                        
+                }
+                catch (Exception eR)
+                {
+                    ChatRoomWarning_Label.Content = "Failed to convert bitmap to string" + eR.Message;
+                }
+            }
+            return base64Str;
+        }
+
+        private Bitmap convertStrToBitmap(string base64)
+        {
+            Bitmap bitmap = null;
+            if (base64 != null)
+            {
+                try
+                {
+                    //Convert Base64 string to byte[]
+                    byte[] byteBuffer = Convert.FromBase64String(base64);
+                    MemoryStream memoryStream = new MemoryStream(byteBuffer);
+
+                    memoryStream.Position = 0;
+
+                    bitmap = (Bitmap)Bitmap.FromStream(memoryStream);
+
+                    memoryStream.Close();
+                    memoryStream = null;
+                    byteBuffer = null;
+
+                    return bitmap;
+                }
+                catch(Exception eR)
+                {
+                    ChatRoomWarning_Label.Content = "Failed to convert bse64 string to bitmap" + eR.Message;
+                }
+            }
+            return bitmap;
+        }
+
         //When user clicks on any room under room list, the user will be redirected to that chat room
         private void RoomList_Select(object sender, SelectionChangedEventArgs e)
         {
@@ -297,7 +352,7 @@ namespace ClientWPF
                     {
                         if(loadedImageData != null)
                         {
-                            foob.SendPublicImage(currChatRoom, loggedUser, loadedImageData);
+                            foob.SendPublicImage(currChatRoom, loggedUser, convertBitmapToStr(loadedImageData));
                             loadedImageData.Dispose();
                         }
                         else
@@ -310,7 +365,7 @@ namespace ClientWPF
                         foob.SendPublicMessage(currChatRoom, loggedUser, message);
                         if (loadedImageData != null)
                         {
-                            foob.SendPublicImage(currChatRoom, loggedUser, loadedImageData);
+                            foob.SendPublicImage(currChatRoom, loggedUser, convertBitmapToStr(loadedImageData));
                             loadedImageData.Dispose();
                         }
                         else
@@ -376,7 +431,7 @@ namespace ClientWPF
                         {
                             if (loadedImageData != null)
                             {
-                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
+                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, convertBitmapToStr(loadedImageData));
                                 loadedImageData.Dispose();
                             }
                             else
@@ -389,7 +444,7 @@ namespace ClientWPF
                             foob.SendPrivateMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, message);
                             if (loadedImageData != null)
                             {
-                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedImageData);
+                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, convertBitmapToStr(loadedImageData));
                                 loadedImageData.Dispose();
                             }
                             else
@@ -510,7 +565,7 @@ namespace ClientWPF
                     }
                     else if (msg.imageData != null)
                     {
-                        obj[1] = msg.imageData;
+                        obj[1] = convertStrToBitmap(msg.imageData);
                     }
                     else if (msg.textFileData != null)
                     {

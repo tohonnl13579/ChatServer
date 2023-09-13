@@ -91,7 +91,7 @@ namespace ChatServer
             }
         }
 
-        public void SendImage(string roomName, string fromUser, string toUser, Bitmap imageData)
+        public void SendImage(string roomName, string fromUser, string toUser, string base64ImageData)
         {
             for (int i = 0; i < chatrooms.Count; i++)
             {
@@ -100,7 +100,7 @@ namespace ChatServer
                     Message messageItem = new Message();
                     messageItem.fromUser = fromUser;
                     messageItem.toUser = toUser;
-                    messageItem.imageData = imageData;
+                    messageItem.imageData = base64ImageData;
                     chatrooms[i].messages.Add(messageItem);
                     break;
                 }

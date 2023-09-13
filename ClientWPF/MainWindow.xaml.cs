@@ -96,7 +96,7 @@ namespace ClientWPF
         private void enterChatRoom()
         {
             ChatRoomWindow chatRoomWindow = new ChatRoomWindow(loggedUser, portNumForClient);
-            portNumForClient++;
+            portNumForClient = portNumForClient + 100;
             if (chatRoomWindow != null) {
                 userLogged.Add(loggedUser);
                 chatRoomWindow.Show();
