@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.ServiceModel;
 using System.Text;
@@ -145,13 +146,13 @@ namespace Server
             string[] mockTextFileData2= new string[5];
             mockTextFileData2[0] = "This";
             mockTextFileData2[1] = "is an example";
-            mockTextFileData2[2] = "textFile data";
+            mockTextFileData2[2] = "textFile data sent to Ram";
             mockTextFileData2[3] = "for testing purposes";
             mockTextFileData2[4] = "Thanks, Ariel";
             Message data4 = new Message();
             data4.fromUser = "Ariel";
             data4.toUser = "Ramprakash";
-            data4.textFileData = mockTextFileData;
+            data4.textFileData = mockTextFileData2;
 
             
             Message data5 = new Message();
@@ -184,6 +185,7 @@ namespace Server
         // Just send a List<Message> to the client, After pain and suffering, this is the solution 
         // Refer to above Example Within //TESTING markers
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public List<string> GetMessages(string roomName, string username)
         {
             List<string> messagesString = new List<string>();

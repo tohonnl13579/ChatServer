@@ -1,0 +1,14 @@
+﻿<Window x:Class="ClientWPF.FileViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClientWPF"
+        mc:Ignorable="d"
+        Title="FileViewer" SizeToContent="WidthAndHeight" Height="398" Width="635">
+    <Grid Background="#FFC9C9C9" Margin="0,0,0,0">
+        <TextBox x:Name="TextBox_TextPresenter" HorizontalAlignment="Left" Margin="3,-1,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="663" Height="336"/>
+        <Button x:Name="Button_DoneButton" Content="Done" HorizontalAlignment="Left" Margin="284,336,0,0" VerticalAlignment="Top" Height="46" Width="92" Click="DoneButton_Click"/>
+
+    </Grid>
+</Window>
