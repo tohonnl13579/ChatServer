@@ -35,7 +35,7 @@ namespace ClientWPF
             LoggedIn_Label.Content = "Logged in as: ";
             Button_EnterChatRoom.Visibility = Visibility.Hidden;
             Button_EnterChatRoom.IsEnabled = false;
-            portNumForClient = 8200;
+            portNumForClient = 8100;
             userLogged = new List<string>();
 
             connectToServer();
@@ -78,6 +78,7 @@ namespace ClientWPF
                 bool logged = foob.AddUser(username);
                 if (logged)
                 {
+                    connectToServer();
                     //Enable the "Enter ChatRoom Button"
                     Warning_Label.Content = "Logged in successfully!";
                     loggedUser = username;
@@ -96,7 +97,6 @@ namespace ClientWPF
         private void enterChatRoom()
         {
             ChatRoomWindow chatRoomWindow = new ChatRoomWindow(loggedUser, portNumForClient);
-            portNumForClient = portNumForClient + 100;
             if (chatRoomWindow != null) {
                 userLogged.Add(loggedUser);
                 chatRoomWindow.Show();

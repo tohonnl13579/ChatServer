@@ -32,14 +32,13 @@ namespace ClientWPF
         private Bitmap loadedImageData;
         private string selectedFilePath;
         private string[] loadedTextFileData;
-        private int maxConnectAtt, portNum;
+        private int portNum;
         List<string[]> textFileDataHolder;
         public ChatRoomWindow(string user, int portNum)
         {
             InitializeComponent();
             ChatRoomWarning_Label.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
             loggedUser = user;
-            maxConnectAtt = 11;
             ChatRoomWarning_Label.Content = "Welcome to the ChatRoom";
             TextBox_TextChatBox.Text = "";
             TextBox_PrivateMsgUser.Text = "";
@@ -52,12 +51,16 @@ namespace ClientWPF
             Console.WriteLine("Hello World");
             this.portNum = portNum;
             connectToServer();
-            foob.mockData(); //TESTING PURPOSES
+            //foob.mockData(); //TESTING PURPOSES
             updateRooms();
         }
 
         private bool connectToServer()
         {
+            if (foobFactory != null)
+            {
+                foobFactory.Close();
+            }
             bool connect = true;
             NetTcpBinding tcpB = new NetTcpBinding();
             tcpB.CloseTimeout = new TimeSpan(0, 0, 5);
@@ -76,17 +79,6 @@ namespace ClientWPF
             foob = foobFactory.CreateChannel();
             Label_LoggedAs.Content = "Logged in as: " + loggedUser;
 
-            //Once it reaches maximum connection attempts, client fails to connect to server.
-            if(maxConnectAtt <= 0)
-            {
-                ChatRoomWarning_Label.Content = "-- Total Connection Failure! --";
-                connect = false;
-            }
-            else
-            {
-                maxConnectAtt--;
-            }
-
             return connect;
         }
 
@@ -101,6 +93,7 @@ namespace ClientWPF
                 if (currChatRoom != null)
                 {
                     foob.LeaveChatRoom(currChatRoom, loggedUser);
+                    connectToServer();
                     //currChatRoom = null;
                 }
 
@@ -108,7 +101,8 @@ namespace ClientWPF
                 if(roomName != "")
                 {
                     string createdRoomName = foob.CreateChatRoom(roomName, loggedUser);
-                    if(createdRoomName != null)
+                    connectToServer();
+                    if (createdRoomName != null)
                     {
                         currChatRoom = createdRoomName;
                         Label_ChatRoom.Content = "Current Room: " + currChatRoom;
@@ -304,12 +298,14 @@ namespace ClientWPF
                 if(currChatRoom != null)
                 {
                     foob.LeaveChatRoom(currChatRoom, loggedUser);
+                    connectToServer();
                     Label_ChatRoom.Content = "Select a room to enter...";
                 }
 
                 if (item != null)
                 {
                     currChatRoom = foob.JoinChatRoom(item.Content.ToString(), loggedUser);
+                    connectToServer();
                     Label_ChatRoom.Content = "Current Room: " + currChatRoom;
                 }
                 updateMessages();
@@ -357,24 +353,29 @@ namespace ClientWPF
                         if(loadedImageData != null)
                         {
                             foob.SendPublicImage(currChatRoom, loggedUser, convertBitmapToStr(loadedImageData));
+                            connectToServer();
                             loadedImageData.Dispose();
                         }
                         else
                         {
                             foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData);
+                            connectToServer();
                         }
                     }
                     else
                     {
                         foob.SendPublicMessage(currChatRoom, loggedUser, message);
+                        connectToServer();
                         if (loadedImageData != null)
                         {
                             foob.SendPublicImage(currChatRoom, loggedUser, convertBitmapToStr(loadedImageData));
+                            connectToServer();
                             loadedImageData.Dispose();
                         }
                         else
                         {
                             foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData);
+                            connectToServer();
                         }
                         TextBox_TextChatBox.Text = "";
                     }
@@ -394,6 +395,7 @@ namespace ClientWPF
                     else
                     {
                         foob.SendPublicMessage(currChatRoom, loggedUser, message);
+                        connectToServer();
                         TextBox_TextChatBox.Text = "";
                     }
                 }
@@ -436,11 +438,13 @@ namespace ClientWPF
                             if (loadedImageData != null)
                             {
                                 foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, convertBitmapToStr(loadedImageData));
+                                connectToServer();
                                 loadedImageData.Dispose();
                             }
                             else
                             { 
                                 foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
+                                connectToServer();
                             }
                         }
                         else
@@ -449,11 +453,13 @@ namespace ClientWPF
                             if (loadedImageData != null)
                             {
                                 foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, convertBitmapToStr(loadedImageData));
+                                connectToServer();
                                 loadedImageData.Dispose();
                             }
                             else
                             {
                                 foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
+                                connectToServer();
                             }
                             TextBox_TextChatBox.Text = "";
                         }
@@ -473,6 +479,7 @@ namespace ClientWPF
                         else
                         {
                             foob.SendPrivateMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, message);
+                            connectToServer();
                             TextBox_TextChatBox.Text = "";
                         }
                     }
@@ -498,6 +505,7 @@ namespace ClientWPF
         {
             bool exists = false;
             HashSet<string> userOnline = foob.GetUserOnline(currChatRoom);
+            connectToServer();
             foreach (string user in userOnline)
             {
                 if (user.Equals(username))
@@ -515,7 +523,8 @@ namespace ClientWPF
             try
             {
                 List<string> roomList = foob.GetChatRoomList();
-                for(int i = 0; i < roomList.Count; i++)
+                connectToServer();
+                for (int i = 0; i < roomList.Count; i++)
                 {
                     ListBoxItem item = new ListBoxItem();
                     item.Content = roomList[i];
@@ -546,6 +555,7 @@ namespace ClientWPF
             {
                 objList = new List<object[]>();
                 List<Database.Message> msgList = foob.GetMSGs(currChatRoom, loggedUser);
+                connectToServer();
                 int count = msgList.Count;
 
                 for (int i = 0; i < count; i++)
@@ -808,6 +818,7 @@ namespace ClientWPF
             try
             {
                 HashSet<string> userOnline = foob.GetUserOnline(currChatRoom);
+                connectToServer();
                 if (userOnline.Count > 0)
                 {
                     ListBox_UserList.Items.Clear();

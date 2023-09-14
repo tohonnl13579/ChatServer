@@ -30,12 +30,8 @@ namespace Server
             tcp.ReaderQuotas.MaxBytesPerRead = 10000000; //10MB 
             tcp.ReaderQuotas.MaxStringContentLength = 1000000; //1MB
 
-            //Creates 5 ports for connection = Up to 4 users can be online
+            //Creates port for connection
             host = new ServiceHost(typeof(DataServer));
-            host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
-            host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
-            host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
-            host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
             host.AddServiceEndpoint(typeof(DataServerInterface), tcp, urlBuilder());
             host.Open();
 
@@ -52,7 +48,6 @@ namespace Server
         {
             string fullUrl, baseUrlFront = "net.tcp://localhost:", baseUrlTail = "/DataService";
             fullUrl = (baseUrlFront + portNum + baseUrlTail);
-            portNum = portNum + 100;
             return fullUrl;
         }
     }

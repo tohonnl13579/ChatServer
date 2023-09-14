@@ -19,7 +19,6 @@ namespace Server
     {
         private static ChatServer.Database db = new ChatServer.Database();
 
-        List<Message> messageData = new List<Message>(); // TESTING
 
         public int GetNumEntries()
         {
@@ -135,111 +134,10 @@ namespace Server
         }
 
         //TESTING
-        public void mockData() //MOCK DATA
-        {
-            //List<object[]> objectList = new List<object[]>();
-            //data = new List<object[]>();
-
-            Message data1 = new Message();
-            data1.fromUser = "Ariel";
-            data1.message = "Hello this is a string messageData";
-
-            Message data2 = new Message();
-            data2.fromUser = "Ariel";
-            data2.toUser = "Lee Toh Ohn";
-            data2.message = "This is a private string messageData to user: LeeTohOhn";
-
-
-            string[] mockTextFileData = new string[5];
-            mockTextFileData[0] = "This";
-            mockTextFileData[1] = "is an example";
-            mockTextFileData[2] = "textFile data";
-            mockTextFileData[3] = "for testing purposes";
-            mockTextFileData[4] = "Thanks, Ariel";
-            Message data3 = new Message();
-            data3.fromUser = "Ariel";
-            data3.textFileData = mockTextFileData;
-
-
-            string[] mockTextFileData2= new string[5];
-            mockTextFileData2[0] = "This";
-            mockTextFileData2[1] = "is an example";
-            mockTextFileData2[2] = "textFile data sent to Ram";
-            mockTextFileData2[3] = "for testing purposes";
-            mockTextFileData2[4] = "Thanks, Ariel";
-            Message data4 = new Message();
-            data4.fromUser = "Ariel";
-            data4.toUser = "Ramprakash";
-            data4.textFileData = mockTextFileData2;
-
-            /*
-            Message data5 = new Message();
-            Bitmap bitmap = new Bitmap(500, 500);
-            Graphics graph = Graphics.FromImage(bitmap);
-            Rectangle ImageSize = new Rectangle(0, 0, 500, 500);
-            graph.FillRectangle(Brushes.Gray, ImageSize);
-            data5.fromUser = "Ariel";
-            data5.imageData = bitmap;
-            */
-
-            messageData.Add(data1);
-            messageData.Add(data2);
-            messageData.Add(data3);
-            messageData.Add(data4);
-            //messageData.Add(data5);
-        }
-
-        public List<Message> getMessageListData()
-        {
-            return messageData;
-        }
-
-        public int getMessageEntryCount()
-        {
-            return messageData.Count;
-        }
-        //TESTING
 
         // FOR REFERENCE FOR ClientWPF
         // Just send a List<Message> to the client, After pain and suffering, this is the solution 
         // Refer to above Example Within //TESTING markers
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public List<string> GetMessages(string roomName, string username)
-        {
-            List<string> messagesString = new List<string>();
-            for (int i = 0; i < db.GetTotalRoom(); i++)
-            {
-                db.GetRoomNameByIndex(i, out string temproomname);
-                if (roomName.Equals(temproomname))
-                {
-                    db.GetRoomMessages(i, out List<Message> messages);
-                    for (int j=0; j<messages.Count; j++)
-                    {
-                        string toAdd;
-                        if (username.Equals(messages[j].fromUser) || username.Equals(messages[j].toUser))
-                        {
-                            if (messages[j].toUser == null)
-                            {
-                                toAdd = "(Public) " + messages[j].fromUser  + ": " + messages[j].message;
-                            }
-                            else
-                            {
-                                toAdd = "(Private) " + messages[j].fromUser + " to " + messages[j].toUser + ": " + messages[j].message;
-                            }
-                        }
-                        else
-                        {
-                            toAdd = "(Public) " + messages[j].fromUser + ": " + messages[j].message;
-                        }
-                        messagesString.Add(toAdd);
-                    }
-                    break;
-                }
-            }
-
-            return messagesString;
-        }
 
         //CURRENTLY WIP
         [MethodImpl(MethodImplOptions.Synchronized)]
