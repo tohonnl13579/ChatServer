@@ -56,7 +56,6 @@ namespace ServerInterface
         [OperationContract]
         void SendPrivateTextFile(string roomName, string fromUser, string toUser, string[] textFileData);
 
-        //WIP
         [OperationContract]
         List<Message> GetMSGs(string roomName, string username);
 

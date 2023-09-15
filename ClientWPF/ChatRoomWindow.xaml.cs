@@ -34,7 +34,8 @@ namespace ClientWPF
         private string[] loadedTextFileData;
         private int portNum;
         List<string[]> textFileDataHolder;
-        public ChatRoomWindow(string user, int portNum)
+        private MainWindow mainWindow;
+        public ChatRoomWindow(string user, int portNum, MainWindow context)
         {
             InitializeComponent();
             ChatRoomWarning_Label.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
@@ -47,6 +48,7 @@ namespace ClientWPF
             loadedTextFileData = null;
             selectedFilePath = null;
             textFileDataHolder = null;
+            mainWindow = context;
             ListView_ChatWindow.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
             Console.WriteLine("Hello World");
             this.portNum = portNum;
@@ -410,6 +412,14 @@ namespace ClientWPF
             {
                 ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
             }
+        }
+
+        //Log Out button
+        private void LogOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainWindow.exitChatRoom(loggedUser);
+            foobFactory.Close();
+            this.Close();
         }
 
         //Send Message privately to someone within the same room

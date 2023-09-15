@@ -96,7 +96,7 @@ namespace ClientWPF
         //This function is called once user is logged in and they press the "Enter ChatRoom Button"
         private void enterChatRoom()
         {
-            ChatRoomWindow chatRoomWindow = new ChatRoomWindow(loggedUser, portNumForClient);
+            ChatRoomWindow chatRoomWindow = new ChatRoomWindow(loggedUser, portNumForClient, this);
             if (chatRoomWindow != null) {
                 userLogged.Add(loggedUser);
                 chatRoomWindow.Show();
@@ -105,6 +105,20 @@ namespace ClientWPF
             else
             {
                 Warning_Label.Content = "Failed to switch windows";
+            }
+        }
+
+        public void exitChatRoom(string user)
+        {
+            if (checkIfAlreadyIn(user))
+            {
+                for(int i = 0; i < userLogged.Count; i++)
+                {
+                    if (userLogged[i].Equals(user))
+                    {
+                        userLogged.Remove(user); 
+                    }
+                }
             }
         }
 
