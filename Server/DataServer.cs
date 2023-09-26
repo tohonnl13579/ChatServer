@@ -30,6 +30,7 @@ namespace Server
             return db.GetTotalRoom();
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public bool AddUser(string username)
         {
             bool added;
@@ -45,6 +46,7 @@ namespace Server
             return added;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public string CreateChatRoom(string roomName, string username)
         {
             string newRoomName = null;
@@ -57,6 +59,7 @@ namespace Server
             return newRoomName;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public string JoinChatRoom(string roomName, string username)
         {
             string nowRoomName = null;
@@ -68,6 +71,7 @@ namespace Server
             return nowRoomName;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void LeaveChatRoom(string roomName, string username)
         {
             if (CheckRoomExisted(roomName))
@@ -76,6 +80,7 @@ namespace Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void SendPublicMessage(string roomName, string username, string message)
         {
             if (CheckRoomExisted(roomName))
@@ -84,6 +89,7 @@ namespace Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void SendPublicImage(string roomName, string username, string imgData)
         {
             if (CheckRoomExisted(roomName))
@@ -92,6 +98,7 @@ namespace Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void SendPublicTextFile(string roomName, string username, string[] textFileData)
         {
             if (CheckRoomExisted(roomName))
@@ -100,6 +107,7 @@ namespace Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void SendPrivateMessage(string roomName, string fromUser, string toUser, string message)
         {
             if (CheckRoomExisted(roomName))
@@ -111,6 +119,7 @@ namespace Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void SendPrivateImage(string roomName, string fromUser, string toUser, string imgData)
         {
             if (CheckRoomExisted(roomName))
@@ -122,6 +131,7 @@ namespace Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void SendPrivateTextFile(string roomName, string fromUser, string toUser, string[] textFileData)
         {
             if (CheckRoomExisted(roomName))
@@ -133,13 +143,6 @@ namespace Server
             }
         }
 
-        //TESTING
-
-        // FOR REFERENCE FOR ClientWPF
-        // Just send a List<Message> to the client, After pain and suffering, this is the solution 
-        // Refer to above Example Within //TESTING markers
-
-        //CURRENTLY WIP
         [MethodImpl(MethodImplOptions.Synchronized)]
         public List<Message> GetMSGs(string roomName, string username)
         {

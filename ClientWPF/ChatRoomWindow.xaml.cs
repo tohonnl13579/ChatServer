@@ -143,6 +143,7 @@ namespace ClientWPF
             { }
         }
 
+        //Used to reconnect to server for every server access as to clear memory
         private bool connectToServer()
         {
             if (foobFactory != null)
@@ -154,9 +155,9 @@ namespace ClientWPF
             tcpB.CloseTimeout = new TimeSpan(0, 0, 5);
             tcpB.ReceiveTimeout = new TimeSpan(0, 0, 10);
             tcpB.SendTimeout = new TimeSpan(0, 0, 30);
-            tcpB.MaxBufferPoolSize = 50000000;
-            tcpB.MaxReceivedMessageSize = 50000000;
-            tcpB.MaxBufferSize = 50000000;
+            tcpB.MaxBufferPoolSize = 50000000; //50MB
+            tcpB.MaxReceivedMessageSize = 50000000; //50MB
+            tcpB.MaxBufferSize = 50000000; //50MB
             tcpB.ReaderQuotas.MaxArrayLength = 1000000;
             tcpB.ReaderQuotas.MaxDepth = 100;
             tcpB.ReaderQuotas.MaxBytesPerRead = 10000000;
@@ -289,6 +290,7 @@ namespace ClientWPF
             }
         }
 
+        //Attempts to read the file selected by the user
         private void imageAndTextFileReader()
         {
             loadedImageData = null;
@@ -322,6 +324,7 @@ namespace ClientWPF
             }
         }
 
+        //Converts a Bitmap object into a Base64 byte string
         private string convertBitmapToStr(Bitmap bitmap)
         {
             string base64Str = null;
@@ -346,6 +349,7 @@ namespace ClientWPF
             return base64Str;
         }
 
+        //Converts a base64 byte string to a bitmap object
         private Bitmap convertStrToBitmap(string base64)
         {
             Bitmap bitmap = null;
@@ -703,8 +707,6 @@ namespace ClientWPF
             //ChatRoomWarning_Label.Content = "";
             try
             {
-                //Change to foob.getMessages() once the server side updated to return object[] list
-                //List<object[]> messageData = new List<object[]>();
                 List<object[]> messageData = null; //For Testing Purposes
                 messageData = getMsgData();
                 textFileDataHolder = new List<string[]>();
