@@ -35,6 +35,14 @@ namespace ClientWPF
         private int portNum;
         List<string[]> textFileDataHolder;
         private MainWindow mainWindow;
+
+        private List<string> chatRooms = new List<string>();
+        private HashSet<string> users = new HashSet<string>();
+        private List<Database.Message> messages = new List<Database.Message>();
+
+        private Thread t1;
+        private Thread t2;
+        private Thread t3;
         public ChatRoomWindow(string user, int portNum, MainWindow context)
         {
             InitializeComponent();
@@ -53,8 +61,86 @@ namespace ClientWPF
             Console.WriteLine("Hello World");
             this.portNum = portNum;
             connectToServer();
-            //foob.mockData(); //TESTING PURPOSES
-            updateRooms();
+            t1 = new Thread(new ThreadStart(updateRoomsT));
+            t2 = new Thread(new ThreadStart(updateUsersT));
+            t3 = new Thread(new ThreadStart(updateMessagesT));
+            t1.Start();
+            t2.Start();
+            t3.Start();
+        }
+
+        private void updateRoomsT()
+        {
+            try
+            {
+                while (true)
+                {
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        List<string> latestRooms = foob.GetChatRoomList();
+                        if (!latestRooms.SequenceEqual(chatRooms))
+                        {
+                            updateRooms();
+                        }
+                    }));
+                    Thread.Sleep(200);
+                }
+            } catch (ThreadAbortException)
+            { }
+        }
+
+        private void updateUsersT()
+        {
+            try
+            {
+                while (true)
+                {
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        HashSet<string> latestUsers = foob.GetUserOnline(currChatRoom);
+                        if (!latestUsers.SequenceEqual(users))
+                        {
+                            updateUsers();
+                        }
+                    }));
+                    Thread.Sleep(200);
+                }
+            } catch (ThreadAbortException)
+            { }
+        }
+
+        private void updateMessagesT()
+        {
+            try
+            {
+                while (true)
+                {
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        if (currChatRoom != null)
+                        {
+                            List<Database.Message> latestMessages = foob.GetMSGs(currChatRoom, loggedUser);
+                            if (latestMessages.Count != messages.Count)
+                            {
+                                updateMessages();
+                            }
+                            else
+                            {
+                                for (int i = 0; i < latestMessages.Count; i++)
+                                {
+                                    if (latestMessages[i].fromUser != messages[i].fromUser || latestMessages[i].toUser != messages[i].toUser || latestMessages[i].message != messages[i].message || latestMessages[i].imageData != messages[i].imageData || latestMessages[i].textFileData != latestMessages[i].textFileData)
+                                    {
+                                        updateMessages();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }));
+                    Thread.Sleep(200);
+                }
+            } catch (ThreadAbortException)
+            { }
         }
 
         private bool connectToServer()
@@ -96,7 +182,6 @@ namespace ClientWPF
                 {
                     foob.LeaveChatRoom(currChatRoom, loggedUser);
                     connectToServer();
-                    //currChatRoom = null;
                 }
 
                 roomName = TextBox_CreateRoom.Text;
@@ -108,9 +193,9 @@ namespace ClientWPF
                     {
                         currChatRoom = createdRoomName;
                         Label_ChatRoom.Content = "Current Room: " + currChatRoom;
-                        updateRooms();
-                        updateMessages();
-                        updateUsers();
+                        //updateRooms();
+                        //updateMessages();
+                        //updateUsers();
                     }
                 }
                 else
@@ -310,8 +395,8 @@ namespace ClientWPF
                     connectToServer();
                     Label_ChatRoom.Content = "Current Room: " + currChatRoom;
                 }
-                updateMessages();
-                updateUsers();
+                //updateMessages();
+                //updateUsers();
                 TextBox_PrivateMsgUser.Text = "";
             }
             catch (CommunicationException cE)
@@ -401,7 +486,7 @@ namespace ClientWPF
                         TextBox_TextChatBox.Text = "";
                     }
                 }
-                updateMessages();
+                //updateMessages();
             }
             catch (CommunicationException cE)
             {
@@ -417,8 +502,11 @@ namespace ClientWPF
         //Log Out button
         private void LogOutButton_Click(object sender, RoutedEventArgs e)
         {
+            t1.Abort();
+            t2.Abort();
+            t3.Abort();
             mainWindow.exitChatRoom(loggedUser);
-            foobFactory.Close();
+            //foobFactory.Close();
             this.Close();
         }
 
@@ -493,7 +581,7 @@ namespace ClientWPF
                             TextBox_TextChatBox.Text = "";
                         }
                     }
-                    updateMessages();
+                    //updateMessages();
                 }
                 else
                 {
@@ -532,12 +620,12 @@ namespace ClientWPF
             ListBox_RoomList.Items.Clear();
             try
             {
-                List<string> roomList = foob.GetChatRoomList();
+                chatRooms = foob.GetChatRoomList();
                 connectToServer();
-                for (int i = 0; i < roomList.Count; i++)
+                for (int i = 0; i < chatRooms.Count; i++)
                 {
                     ListBoxItem item = new ListBoxItem();
-                    item.Content = roomList[i];
+                    item.Content = chatRooms[i];
                     ListBox_RoomList.Items.Add(item);
                 }
             }
@@ -564,14 +652,14 @@ namespace ClientWPF
             else
             {
                 objList = new List<object[]>();
-                List<Database.Message> msgList = foob.GetMSGs(currChatRoom, loggedUser);
+                messages = foob.GetMSGs(currChatRoom, loggedUser);
                 connectToServer();
-                int count = msgList.Count;
+                int count = messages.Count;
 
                 for (int i = 0; i < count; i++)
                 {
                     object[] obj = new object[2];
-                    Database.Message msg = msgList[i];
+                    Database.Message msg = messages[i];
                     if (msg.toUser == null)
                     {
                         String identifier = msg.fromUser;
@@ -827,12 +915,12 @@ namespace ClientWPF
             //ChatRoomWarning_Label.Content = "";
             try
             {
-                HashSet<string> userOnline = foob.GetUserOnline(currChatRoom);
+                users = foob.GetUserOnline(currChatRoom);
                 connectToServer();
-                if (userOnline.Count > 0)
+                if (users.Count > 0)
                 {
                     ListBox_UserList.Items.Clear();
-                    foreach (string user in userOnline)
+                    foreach (string user in users)
                     {
                         ListBoxItem item = new ListBoxItem();
                         item.Content = user;
