@@ -133,13 +133,6 @@ namespace Server
             }
         }
 
-        //TESTING
-
-        // FOR REFERENCE FOR ClientWPF
-        // Just send a List<Message> to the client, After pain and suffering, this is the solution 
-        // Refer to above Example Within //TESTING markers
-
-        //CURRENTLY WIP
         [MethodImpl(MethodImplOptions.Synchronized)]
         public List<Message> GetMSGs(string roomName, string username)
         {
