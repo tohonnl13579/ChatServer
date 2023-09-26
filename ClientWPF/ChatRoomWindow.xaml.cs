@@ -331,7 +331,6 @@ namespace ClientWPF
             openFileDialog.InitialDirectory = @"C:\";
             openFileDialog.Filter = "Image Files (*.jpg;*.jpeg;*.png;*.gif;*.bmp)|*.jpg;*.jpeg;*.png;*.gif;*.bmp|Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
 
-            // Show the dialog and set the selected file path if user clicked "OK"
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 selectedFilePath = openFileDialog.FileName;
@@ -539,7 +538,6 @@ namespace ClientWPF
                             TextBox_TextChatBox.Text = "";
                         }
                     }
-                    //updateMessages();
                 }
                 catch (CommunicationException cE)
                 {
@@ -644,7 +642,6 @@ namespace ClientWPF
                                 TextBox_TextChatBox.Text = "";
                             }
                         }
-                        //updateMessages();
                     }
                     else
                     {
@@ -712,7 +709,6 @@ namespace ClientWPF
         private List<object[]> getMsgData()
         {
             List<object[]> objList = null;
-            //List<Database.Message> msgList = foob.getMessageListData();
             if(currChatRoom == null)
             {
                 //Invalid, so return null
@@ -768,10 +764,9 @@ namespace ClientWPF
 
         private void updateMessages()
         {
-            //ChatRoomWarning_Label.Content = "";
             try
             {
-                List<object[]> messageData = null; //For Testing Purposes
+                List<object[]> messageData = null;
                 messageData = getMsgData();
                 textFileDataHolder = new List<string[]>();
                 int buttonIDCounter = 1;
@@ -781,7 +776,6 @@ namespace ClientWPF
                 {
                     if (currChatRoom != null)
                     {
-                        //COMMENT: Feels like coding JavaFx ngl...
                         for (int i = 0; i < messageData.Count; i++)
                         {
                             object[] data = messageData[i];
