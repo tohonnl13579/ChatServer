@@ -37,7 +37,7 @@ namespace ClientWPF
         private int portNum;
         List<string[]> textFileDataHolder;
         private MainWindow mainWindow;
-        private bool online;
+        private bool online, roomSelected;
 
         private List<string> chatRooms = new List<string>();
         private HashSet<string> users = new HashSet<string>();
@@ -61,6 +61,7 @@ namespace ClientWPF
             selectedFilePath = null;
             textFileDataHolder = null;
             mainWindow = context;
+            roomSelected = false;
             online = true;
             onlineAccess(1);
             ListView_ChatWindow.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
@@ -445,6 +446,7 @@ namespace ClientWPF
                     currChatRoom = foob.JoinChatRoom(item.Content.ToString(), loggedUser);
                     connectToServer();
                     Label_ChatRoom.Content = "Current Room: " + currChatRoom;
+                    roomSelected = true;
                 }
                 TextBox_PrivateMsgUser.Text = "";
             }
@@ -477,112 +479,9 @@ namespace ClientWPF
         private void SendPublic_Click(object sender, RoutedEventArgs e)
         {
             ChatRoomWarning_Label.Content = "";
-            try
+            if (roomSelected)
             {
-                string message = TextBox_TextChatBox.Text;
-                //check if there is any file loaded
-                if (loadedImageData != null || loadedTextFileData != null)
-                {
-                    //If any file presently loaded, if there is any given message, it will appear on top of the file
-                    if (message == null || message.Equals(""))
-                    {
-                        if(loadedImageData != null)
-                        {
-                            foob.SendPublicImage(currChatRoom, loggedUser, convertBitmapToStr(loadedImageData));
-                            connectToServer();
-                            loadedImageData.Dispose();
-                        }
-                        else
-                        {
-                            foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData);
-                            connectToServer();
-                        }
-                    }
-                    else
-                    {
-                        foob.SendPublicMessage(currChatRoom, loggedUser, message);
-                        connectToServer();
-                        if (loadedImageData != null)
-                        {
-                            foob.SendPublicImage(currChatRoom, loggedUser, convertBitmapToStr(loadedImageData));
-                            connectToServer();
-                            loadedImageData.Dispose();
-                        }
-                        else
-                        {
-                            foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData);
-                            connectToServer();
-                        }
-                        TextBox_TextChatBox.Text = "";
-                    }
-
-                    //reset to null once sent
-                    loadedImageData = null;
-                    loadedTextFileData = null;
-                    Button_FileSend.Content = "File";
-                }
-                else
-                {
-                    //If any file is not loaded, then just send a simple string message
-                    if(message == null || message.Equals(""))
-                    {
-                        ChatRoomWarning_Label.Content = "Text bar is empty";
-                    }
-                    else
-                    {
-                        foob.SendPublicMessage(currChatRoom, loggedUser, message);
-                        connectToServer();
-                        TextBox_TextChatBox.Text = "";
-                    }
-                }
-                //updateMessages();
-            }
-            catch (CommunicationException cE)
-            {
-                ChatRoomWarning_Label.Content = "Connection Lost!: " + cE.Message;
-                connectToServer();
-            }
-            catch (Exception eR)
-            {
-                ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
-            }
-        }
-
-        //Log Out button
-        private void LogOutButton_Click(object sender, RoutedEventArgs e)
-        {
-            /* No Aborting Lmao
-            t1.Abort();
-            t2.Abort();
-            t3.Abort();
-            */
-
-            //Safer closing of threads
-            onlineAccess(0);
-            t1.Join();
-            t2.Join();
-            t3.Join();
-
-            mainWindow.exitChatRoom(loggedUser);
-            foobFactory.Close();
-            this.Close();
-        }
-
-        //Send Message privately to someone within the same room
-        private void SendPrivate_Click(object sender, RoutedEventArgs e)
-        {
-            ChatRoomWarning_Label.Content = "";
-            try
-            {
-                if ((TextBox_PrivateMsgUser.Text).Equals(loggedUser))
-                {
-                    ChatRoomWarning_Label.Content = "You cannot send a private message to yourself";
-                }
-                else if ((TextBox_PrivateMsgUser.Text).Equals("") || (TextBox_PrivateMsgUser.Text) == null)
-                {
-                    ChatRoomWarning_Label.Content = "Enter an existing user to send to...";
-                }
-                else if(userExists(TextBox_PrivateMsgUser.Text))
+                try
                 {
                     string message = TextBox_TextChatBox.Text;
                     //check if there is any file loaded
@@ -593,28 +492,29 @@ namespace ClientWPF
                         {
                             if (loadedImageData != null)
                             {
-                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, convertBitmapToStr(loadedImageData));
+                                foob.SendPublicImage(currChatRoom, loggedUser, convertBitmapToStr(loadedImageData));
                                 connectToServer();
                                 loadedImageData.Dispose();
                             }
                             else
-                            { 
-                                foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
+                            {
+                                foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData);
                                 connectToServer();
                             }
                         }
                         else
                         {
-                            foob.SendPrivateMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, message);
+                            foob.SendPublicMessage(currChatRoom, loggedUser, message);
+                            connectToServer();
                             if (loadedImageData != null)
                             {
-                                foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, convertBitmapToStr(loadedImageData));
+                                foob.SendPublicImage(currChatRoom, loggedUser, convertBitmapToStr(loadedImageData));
                                 connectToServer();
                                 loadedImageData.Dispose();
                             }
                             else
                             {
-                                foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
+                                foob.SendPublicTextFile(currChatRoom, loggedUser, loadedTextFileData);
                                 connectToServer();
                             }
                             TextBox_TextChatBox.Text = "";
@@ -634,26 +534,136 @@ namespace ClientWPF
                         }
                         else
                         {
-                            foob.SendPrivateMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, message);
+                            foob.SendPublicMessage(currChatRoom, loggedUser, message);
                             connectToServer();
                             TextBox_TextChatBox.Text = "";
                         }
                     }
                     //updateMessages();
                 }
-                else
+                catch (CommunicationException cE)
                 {
-                    ChatRoomWarning_Label.Content = "This user does not exist!";
+                    ChatRoomWarning_Label.Content = "Connection Lost!: " + cE.Message;
+                    connectToServer();
+                }
+                catch (Exception eR)
+                {
+                    ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
                 }
             }
-            catch (CommunicationException cE)
+            else
             {
-                ChatRoomWarning_Label.Content = "Connection Lost!: " + cE.Message;
-                connectToServer();
+                ChatRoomWarning_Label.Content = "Select a room first please...";
             }
-            catch (Exception eR)
+        }
+
+        //Log Out button
+        private void LogOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            //Closing of threads
+            onlineAccess(0);
+            t1.Join();
+            t2.Join();
+            t3.Join();
+
+            mainWindow.exitChatRoom(loggedUser);
+            foobFactory.Close();
+            this.Close();
+        }
+
+        //Send Message privately to someone within the same room
+        private void SendPrivate_Click(object sender, RoutedEventArgs e)
+        {
+            ChatRoomWarning_Label.Content = "";
+            if (roomSelected)
             {
-                ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
+                try
+                {
+                    if ((TextBox_PrivateMsgUser.Text).Equals(loggedUser))
+                    {
+                        ChatRoomWarning_Label.Content = "You cannot send a private message to yourself";
+                    }
+                    else if ((TextBox_PrivateMsgUser.Text).Equals("") || (TextBox_PrivateMsgUser.Text) == null)
+                    {
+                        ChatRoomWarning_Label.Content = "Enter an existing user to send to...";
+                    }
+                    else if (userExists(TextBox_PrivateMsgUser.Text))
+                    {
+                        string message = TextBox_TextChatBox.Text;
+                        //check if there is any file loaded
+                        if (loadedImageData != null || loadedTextFileData != null)
+                        {
+                            //If any file presently loaded, if there is any given message, it will appear on top of the file
+                            if (message == null || message.Equals(""))
+                            {
+                                if (loadedImageData != null)
+                                {
+                                    foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, convertBitmapToStr(loadedImageData));
+                                    connectToServer();
+                                    loadedImageData.Dispose();
+                                }
+                                else
+                                {
+                                    foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
+                                    connectToServer();
+                                }
+                            }
+                            else
+                            {
+                                foob.SendPrivateMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, message);
+                                if (loadedImageData != null)
+                                {
+                                    foob.SendPrivateImage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, convertBitmapToStr(loadedImageData));
+                                    connectToServer();
+                                    loadedImageData.Dispose();
+                                }
+                                else
+                                {
+                                    foob.SendPrivateTextFile(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, loadedTextFileData);
+                                    connectToServer();
+                                }
+                                TextBox_TextChatBox.Text = "";
+                            }
+
+                            //reset to null once sent
+                            loadedImageData = null;
+                            loadedTextFileData = null;
+                            Button_FileSend.Content = "File";
+                        }
+                        else
+                        {
+                            //If any file is not loaded, then just send a simple string message
+                            if (message == null || message.Equals(""))
+                            {
+                                ChatRoomWarning_Label.Content = "Text bar is empty";
+                            }
+                            else
+                            {
+                                foob.SendPrivateMessage(currChatRoom, loggedUser, TextBox_PrivateMsgUser.Text, message);
+                                connectToServer();
+                                TextBox_TextChatBox.Text = "";
+                            }
+                        }
+                        //updateMessages();
+                    }
+                    else
+                    {
+                        ChatRoomWarning_Label.Content = "This user does not exist!";
+                    }
+                }
+                catch (CommunicationException cE)
+                {
+                    ChatRoomWarning_Label.Content = "Connection Lost!: " + cE.Message;
+                    connectToServer();
+                }
+                catch (Exception eR)
+                {
+                    ChatRoomWarning_Label.Content = "Exception occured: " + eR.Message;
+                }
+            }
+            else
+            {
+                ChatRoomWarning_Label.Content = "Select a room first please...";
             }
         }
 
