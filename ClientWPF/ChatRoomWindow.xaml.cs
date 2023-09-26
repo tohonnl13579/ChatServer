@@ -1,5 +1,4 @@
-﻿//using Microsoft.Win32;
-using ServerInterface;
+﻿using ServerInterface;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -20,8 +19,7 @@ using System.Windows.Shapes;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
-using Microsoft.SqlServer.Server;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace ClientWPF
 {
@@ -101,6 +99,10 @@ namespace ClientWPF
             {
                 System.Windows.MessageBox.Show(tiE.Message);
             }
+            catch(TaskCanceledException tcE)
+            {
+                System.Windows.MessageBox.Show(tcE.Message);
+            }
         }
 
         //Update Users thread, to update with new users in each room for every client every 200 miliseconds
@@ -128,6 +130,10 @@ namespace ClientWPF
             catch (ThreadInterruptedException tiE)
             {
                 System.Windows.MessageBox.Show(tiE.Message);
+            }
+            catch (TaskCanceledException tcE)
+            {
+                System.Windows.MessageBox.Show(tcE.Message);
             }
         }
 
@@ -170,6 +176,10 @@ namespace ClientWPF
             catch (ThreadInterruptedException tiE)
             {
                 System.Windows.MessageBox.Show(tiE.Message);
+            }
+            catch (TaskCanceledException tcE)
+            {
+                System.Windows.MessageBox.Show(tcE.Message);
             }
         }
 
