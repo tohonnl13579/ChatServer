@@ -25,6 +25,7 @@ namespace ClientWPF
         private string loggedUser;
         private int portNumForClient;
         private List<string> userLogged;
+        private List<string> userLog;
         public MainWindow()
         {
             InitializeComponent();
@@ -37,6 +38,7 @@ namespace ClientWPF
             Button_EnterChatRoom.IsEnabled = false;
             portNumForClient = 8100;
             userLogged = new List<string>();
+            userLog = new List<string>();
 
             connectToServer();
         }
@@ -44,6 +46,10 @@ namespace ClientWPF
         //Used to reconnect to the server
         private void connectToServer()
         {
+            if (foobFactory != null)
+            {
+                foobFactory.Close();
+            }
             NetTcpBinding tcpB = new NetTcpBinding();
 
             tcpB.CloseTimeout = new TimeSpan(0, 0, 10);
@@ -88,7 +94,16 @@ namespace ClientWPF
                 }
                 else
                 {
-                    Warning_Label.Content = "User exists!";
+                    if (checkIfUserExists(username))
+                    {
+                        connectToServer();
+                        //Enable the "Enter ChatRoom Button"
+                        Warning_Label.Content = "Welcome back " + username;
+                        loggedUser = username;
+                        LoggedIn_Label.Content = "Logged in as: " + loggedUser;
+                        Button_EnterChatRoom.Visibility = Visibility.Visible;
+                        Button_EnterChatRoom.IsEnabled = true;
+                    }
                 }
             }
         }
@@ -99,8 +114,8 @@ namespace ClientWPF
             ChatRoomWindow chatRoomWindow = new ChatRoomWindow(loggedUser, portNumForClient, this);
             if (chatRoomWindow != null) {
                 userLogged.Add(loggedUser);
+                userLog.Add(loggedUser);
                 chatRoomWindow.Show();
-                //this.Close();
             }
             else
             {
@@ -126,6 +141,19 @@ namespace ClientWPF
         {
             bool returnVal = false;
             foreach(string userInList in userLogged)
+            {
+                if (userInList.Equals(user))
+                {
+                    returnVal = true;
+                }
+            }
+            return returnVal;
+        }
+
+        private bool checkIfUserExists(string user)
+        {
+            bool returnVal = false;
+            foreach (string userInList in userLog)
             {
                 if (userInList.Equals(user))
                 {

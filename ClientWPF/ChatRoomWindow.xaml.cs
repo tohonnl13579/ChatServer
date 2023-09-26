@@ -64,7 +64,6 @@ namespace ClientWPF
             online = true;
             onlineAccess(1);
             ListView_ChatWindow.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
-            Console.WriteLine("Hello World");
             this.portNum = portNum;
             connectToServer();
             t1 = new Thread(new ThreadStart(updateRoomsT));
@@ -245,9 +244,6 @@ namespace ClientWPF
                     {
                         currChatRoom = createdRoomName;
                         Label_ChatRoom.Content = "Current Room: " + currChatRoom;
-                        //updateRooms();
-                        //updateMessages();
-                        //updateUsers();
                     }
                 }
                 else
@@ -450,8 +446,6 @@ namespace ClientWPF
                     connectToServer();
                     Label_ChatRoom.Content = "Current Room: " + currChatRoom;
                 }
-                //updateMessages();
-                //updateUsers();
                 TextBox_PrivateMsgUser.Text = "";
             }
             catch (CommunicationException cE)
