@@ -973,10 +973,8 @@ namespace ClientWPF
         {
             BitmapImage bitmapImg = new BitmapImage();
 
-            //Some complicated stuff, had to research a bunch of this :P
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                // Save the Bitmap to the memory stream as a .png format
                 bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
 
                 memoryStream.Seek(0, SeekOrigin.Begin);
@@ -992,7 +990,6 @@ namespace ClientWPF
 
         private void updateUsers()
         {
-            //ChatRoomWarning_Label.Content = "";
             try
             {
                 users = foob.GetUserOnline(currChatRoom);
