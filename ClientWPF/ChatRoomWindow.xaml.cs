@@ -18,8 +18,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Drawing.Imaging;
+using System.Runtime.CompilerServices;
+using Microsoft.SqlServer.Server;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ClientWPF
 {
@@ -35,6 +37,7 @@ namespace ClientWPF
         private int portNum;
         List<string[]> textFileDataHolder;
         private MainWindow mainWindow;
+        private bool online;
 
         private List<string> chatRooms = new List<string>();
         private HashSet<string> users = new HashSet<string>();
@@ -43,6 +46,7 @@ namespace ClientWPF
         private Thread t1;
         private Thread t2;
         private Thread t3;
+
         public ChatRoomWindow(string user, int portNum, MainWindow context)
         {
             InitializeComponent();
@@ -57,6 +61,8 @@ namespace ClientWPF
             selectedFilePath = null;
             textFileDataHolder = null;
             mainWindow = context;
+            online = true;
+            onlineAccess(1);
             ListView_ChatWindow.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
             Console.WriteLine("Hello World");
             this.portNum = portNum;
@@ -69,11 +75,12 @@ namespace ClientWPF
             t3.Start();
         }
 
+        //Update Rooms thread, to update with new Rooms being created for every client every 200 miliseconds
         private void updateRoomsT()
         {
             try
             {
-                while (true)
+                while (onlineAccess(-1))
                 {
                     Dispatcher.Invoke(new Action(() =>
                     {
@@ -85,15 +92,23 @@ namespace ClientWPF
                     }));
                     Thread.Sleep(200);
                 }
-            } catch (ThreadAbortException)
-            { }
+            } 
+            catch (ThreadAbortException taE)
+            {
+                System.Windows.MessageBox.Show(taE.Message);
+            }
+            catch (ThreadInterruptedException tiE)
+            {
+                System.Windows.MessageBox.Show(tiE.Message);
+            }
         }
 
+        //Update Users thread, to update with new users in each room for every client every 200 miliseconds
         private void updateUsersT()
         {
             try
             {
-                while (true)
+                while (onlineAccess(-1))
                 {
                     Dispatcher.Invoke(new Action(() =>
                     {
@@ -105,15 +120,23 @@ namespace ClientWPF
                     }));
                     Thread.Sleep(200);
                 }
-            } catch (ThreadAbortException)
-            { }
+            }
+            catch (ThreadAbortException taE)
+            {
+                System.Windows.MessageBox.Show(taE.Message);
+            }
+            catch (ThreadInterruptedException tiE)
+            {
+                System.Windows.MessageBox.Show(tiE.Message);
+            }
         }
 
+        //Update Messages thread, to update with new messages for every client every 200 miliseconds
         private void updateMessagesT()
         {
             try
             {
-                while (true)
+                while (onlineAccess(-1))
                 {
                     Dispatcher.Invoke(new Action(() =>
                     {
@@ -139,8 +162,35 @@ namespace ClientWPF
                     }));
                     Thread.Sleep(200);
                 }
-            } catch (ThreadAbortException)
-            { }
+            }
+            catch (ThreadAbortException taE)
+            {
+                System.Windows.MessageBox.Show(taE.Message);
+            }
+            catch (ThreadInterruptedException tiE)
+            {
+                System.Windows.MessageBox.Show(tiE.Message);
+            }
+        }
+
+        //Used to access the global variable 'online' to check if the client is still ongoing,
+        //this also acts as a way to modify the state of the variable syncronoisly to prevent race condition
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private bool onlineAccess(int mod)
+        {
+            if(mod == -1)
+            {
+                //Returns the 'online' variable at its current state, so no modification
+            }
+            else if(mod == 0) 
+            {
+                online = false;
+            }
+            else if(mod == 1)
+            {
+                online = true;
+            }
+            return online;
         }
 
         //Used to reconnect to server for every server access as to clear memory
@@ -150,6 +200,7 @@ namespace ClientWPF
             {
                 foobFactory.Close();
             }
+
             bool connect = true;
             NetTcpBinding tcpB = new NetTcpBinding();
             tcpB.CloseTimeout = new TimeSpan(0, 0, 5);
@@ -506,11 +557,20 @@ namespace ClientWPF
         //Log Out button
         private void LogOutButton_Click(object sender, RoutedEventArgs e)
         {
+            /* No Aborting Lmao
             t1.Abort();
             t2.Abort();
             t3.Abort();
+            */
+
+            //Safer closing of threads
+            onlineAccess(0);
+            t1.Join();
+            t2.Join();
+            t3.Join();
+
             mainWindow.exitChatRoom(loggedUser);
-            //foobFactory.Close();
+            foobFactory.Close();
             this.Close();
         }
 
