@@ -57,6 +57,7 @@ namespace ClientWPF
             updateRooms();
         }
 
+        //Used to reconnect to server for every server access as to clear memory
         private bool connectToServer()
         {
             if (foobFactory != null)
@@ -204,6 +205,7 @@ namespace ClientWPF
             }
         }
 
+        //Attempts to read the file selected by the user
         private void imageAndTextFileReader()
         {
             loadedImageData = null;
@@ -237,6 +239,7 @@ namespace ClientWPF
             }
         }
 
+        //Converts a Bitmap object into a Base64 byte string
         private string convertBitmapToStr(Bitmap bitmap)
         {
             string base64Str = null;
@@ -261,6 +264,7 @@ namespace ClientWPF
             return base64Str;
         }
 
+        //Converts a base64 byte string to a bitmap object
         private Bitmap convertStrToBitmap(string base64)
         {
             Bitmap bitmap = null;
@@ -615,8 +619,6 @@ namespace ClientWPF
             //ChatRoomWarning_Label.Content = "";
             try
             {
-                //Change to foob.getMessages() once the server side updated to return object[] list
-                //List<object[]> messageData = new List<object[]>();
                 List<object[]> messageData = null; //For Testing Purposes
                 messageData = getMsgData();
                 textFileDataHolder = new List<string[]>();
