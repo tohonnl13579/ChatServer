@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClientWPF"
         mc:Ignorable="d"
-        Title="ChatRoomWindow" SizeToContent="WidthAndHeight">
+        Title="ChatRoomWindow" SizeToContent="WidthAndHeight" Closing="window_closing">
     <Grid Background="#FFB7B3B3">
         <Label x:Name="ChatRoomWarning_Label" Content="Warning_Label" HorizontalAlignment="Left" Margin="162,403,0,0" VerticalAlignment="Top" FontSize="8" FontWeight="DemiBold" Foreground="DarkRed" RenderTransformOrigin="0.725,0.554" Width="371"/>
         <ListBox x:Name="ListBox_RoomList" d:ItemsSource="{d:SampleData ItemCount=5}" Height="339" Width="160" SelectionChanged="RoomList_Select" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,31,0,0">

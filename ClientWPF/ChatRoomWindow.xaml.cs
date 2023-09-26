@@ -565,6 +565,16 @@ namespace ClientWPF
             }
         }
 
+        //Prevents user from closing the window forcefully without proper log out
+        private void window_closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (onlineAccess(-1))
+            {
+                e.Cancel = true;
+                ChatRoomWarning_Label.Content = "Log Out Properly Please...";
+            }
+        }
+
         //Log Out button
         private void LogOutButton_Click(object sender, RoutedEventArgs e)
         {
