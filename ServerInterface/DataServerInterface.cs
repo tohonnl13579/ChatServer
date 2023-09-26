@@ -16,8 +16,6 @@ namespace ServerInterface
         [OperationContract]
         bool AddUser(string username);
 
-
-
         // FUNCTIONS FOR LOGGED IN PAGE //
         [OperationContract]
         int GetNumEntries();
