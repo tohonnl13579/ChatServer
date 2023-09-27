@@ -578,6 +578,10 @@ namespace ClientWPF
         //Log Out button
         private void LogOutButton_Click(object sender, RoutedEventArgs e)
         {
+            if (currChatRoom != null)
+            {
+                foob.LeaveChatRoom(currChatRoom, loggedUser);
+            }
             //Closing of threads
             onlineAccess(0);
             t1.Join();
