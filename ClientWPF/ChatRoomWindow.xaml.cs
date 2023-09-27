@@ -488,7 +488,7 @@ namespace ClientWPF
         private void SendPublic_Click(object sender, RoutedEventArgs e)
         {
             ChatRoomWarning_Label.Content = "";
-            if (roomSelected)
+            if (roomSelected || currChatRoom != null)
             {
                 try
                 {
